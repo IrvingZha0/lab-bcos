@@ -18,7 +18,7 @@ Take the typical IDC(Internet Data Center) architecture of the bank as an exampl
 ## Configuration
 AMOP does not require any additional configuration, The following is a configuration example for SDK:
 SDK configuration(Spring Bean):
-```
+```xml
 
 	<?xml version="1.0" encoding="UTF-8" ?>
 	<beans xmlns="http://www.springframework.org/schema/beans"
@@ -64,7 +64,7 @@ SDK configuration(Spring Bean):
 ```
 
 Proxy configuration, If there is a DMZ:
-```
+```xml
 
 	<?xml version="1.0" encoding="UTF-8" ?>
 	<beans xmlns="http://www.springframework.org/schema/beans"
@@ -107,7 +107,7 @@ AMOP supports multiple topic messages sending and receiving in the same blockcha
 
 Server-side code example:
 
-```
+```java
 
 	package cn.webank.channel.test;
 	
@@ -151,7 +151,7 @@ Server-side code example:
 ```
 Server-side PushCallback class example:
 
-```
+```java
 
 	package cn.webank.channel.test;
 	
@@ -188,7 +188,7 @@ Server-side PushCallback class example:
 
 Client-side example:
 
-```
+```java
 
 	package cn.webank.channel.test;
 	
