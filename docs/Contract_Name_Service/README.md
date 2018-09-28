@@ -2,10 +2,10 @@
 
 ## Overview
 
-### 1.Calling Smart Contract Overview
+### 1.Steps to call a Smart Contract
 
-The process of calling a smart contract includes: writing a contract, compiling a contract, and deploying a contract.
-Take a simple contract HelloWorld.sol as an example:
+Implement a smart contract includes steps: coding, compiling, and deployment.
+Take HelloWorld.sol as an example:
 
 ``` solidity
 // HelloWorld.sol path: FISCO-BCOS/tool/HelloWorld.sol
@@ -24,7 +24,7 @@ contract HelloWorld{
 }
 ```
 
-After compiling the contract, you can get a description of the contract interface abi as follows:
+After compiling the contract, a description of the contract interface - ABI - had been provided as follows:
 
 ```json
 [
@@ -69,26 +69,26 @@ After compiling the contract, you can get a description of the contract interfac
 ```
 
 Then deploy the contract to the blockchain and get an address, for example: 0x269ab4bc23b07efeb3c3fd52eecfc4cbe6a50859.
-Finally, using address combined with abi, you can call the contract. The various SDK tools are used differently, but essentially encapsulate the use of address and abi. 
+Finally, use the address and ABI to call the contract. The key input parameters are address and ABI even there are various SDK tools. 
 
-### 2. CNS Brief introduction
+### 2. Brief to CNS
 
-As can be seen from the contract call flow, contract abi and address are necessary. So it has the following problems:
+ABI and contract address are mandatory in the calling process. There are below inconveniences:
 
-1. The contract ABI description is a long JSON string and that is not user-friendly for the caller.
-2. Contract address is a magic number which is not easy to remember, and it requires careful maintenance. The contracts will be inaccessible if you lose it.
-3. The caller needs to update the contract address every time when the contract is redeployed.
-4. Not convenient for version management and contract gated-upgrade.
+1. The ABI is a long JSON string, not user-friendly.
+2. Contract address is a magic number which is hard to remember. The contracts will be lost if the address had been forgotten.
+3. The contract address changes for each deployment.
+4. Difficult to handle version management and contract gated-upgrade.
 
-The CNS provides a mapping relationship between naming and contract interface call.
-In CNS, when the contract interface is called, the name, interface and parameter information of the contract map is passed in. The CNS Manager module of the underlying framework maintains the mapping relationship between the name and contract information and it will called by EVM when converting the underlying bytecode according to the name, interface and parameter information.
+The CNS hold a mapping between contract name and its ABI/address.
+When calling by CNS, pass the CNS name, version, function name and associated parameters. And then the CNS Manager module in framework will translate it to the exactly ABI and address for binary execution in EVM.
 
-So CNS has the following advantages:
+Below diagram shows the process and its advantages:
 
 ![](./images/en_cns_1.png)
 
-1. No need to maintain unfriendly contract ABI and contract address.
-2. The calling method is more simple and friendly. It only needs the CNS name, interface and parameter information of the contract mapping.
+1. No need to maintain unfriendly ABI and contract address any more.
+2. Only needs the CNS name, interface and parameter.
 3. Built-in version management and gated-upgrade features.
 
 ## How it works
@@ -97,24 +97,23 @@ So CNS has the following advantages:
 
 ![](./images/en_cns_2.png)
 
-In the framework, the naming service module provides a naming service. The client requests the RPC to call the contract service transaction. The transaction framework first accesses the contract naming service module, thereby parsing the real contract information to be accessed, then constructing the information required for the contract call, and final make a call to the business contract and return the results to the client.
+The client calls the contract service by RPC, first it will visit contract naming service to get underlying business contract details(ABI and address), then constructing a call to business smart contract by its ABI and address, and finally return the results to the client.
 
-### 2. Main Module
+### 2. Key components
 
-#### a. Contract Management Module
+#### a. Contract Management
 
-In contract management, there is a mapping relationship between the name of naming service and contract information, Contract information including contract address, ABI, version number, etc., and it also provide an interface for external assistive tools(cns_manager.js) to add, update, override, reset. In the meantime, there will be a backup of the contract's content in the underlying trading framework memory. When the content of the contract changes, the memory is updated synchronously.
+In contract management, there is a mapping between the name and contract information. contract information including contract address, ABI and version number etc., and an external assistive tool (cns_manager.js) can provides add, update, override and reset features. In the meantime, there is a contract backup in the underlying memory and the memory is updated synchronously when contract changes.
 
-- The current CNS mapping relationship: Contract name + contract version number => contract details (abi contract address, etc.)
-- Contract implementation: systemcontractv2/ContractAbiMgr.sol  
-- Assistive Contract: ContractBase.sol(Path: tool/ContractBase.sol)  
-- Providing multi-version version management of the deployed contract which allows the contract to inherit from ContractBase.sol, and call the ContractBase.sol in the constructor to initialize the version member.
-
-- Note: ContractAbiMgr is maintained in the system contract, so you need to deploy the system contract first when using the CNS service.
+- The current CNS mapping: contract name + contract version number => contract details (ABI, address etc.)
+- Implementation: systemcontractv2/ContractAbiMgr.sol  
+- Assistive Contract: tool/ContractBase.sol
+- Providing multi-version management which allows the contract to inherit from ContractBase.sol, and initialize the version member in the constructor.
+- Note: ContractAbiMgr is maintained in the system contract, so deploy the system contract first when using the CNS.
 
 #### b. Assistive Tools
 
-Provide an interface for add, update, override and reset function.
+Provide add, update, override and reset features.
 
 - Tool: tool/cns_manager.js  
 
@@ -132,8 +131,8 @@ babel-node cns_manager.js
 
 - Command    : add  
   Parameter  : contractName  
-  Function   : add contractName information to contract management  
-  Note       : If the contractName corresponding information already exists then the operation will fail. and you can: 1. Update the version number of the current contract. When calling with CNS mode, specify the version number. 2. Execute the update operation to forcibly overwrite the current information.
+  Function   : add contractName to contract management  
+  Note       : If the contractName already exists then the operation will fail. So need: 1. Update the current contract version number - specify the version number during call CNS. 2. Update forcibly to overwrite.
 
 ```javascript
 //first time add Test, success
@@ -152,7 +151,7 @@ cns_manager.js  ........................Begin........................
 ```
 - Command   : get  
   Parameter : 1. contractName  2. contractVersion [optional]  
-  Function  : Get contractName corresponding contractVersion information
+  Feature    : Get contractName corresponding contractVersion
 
 ```javascript
 babel-node cns_manager.js get HelloWorld
@@ -166,8 +165,8 @@ cns_manager.js  ........................Begin........................
 ```
 - Command   : update 
   Parameter : contractName
-  Function  : Update contractName  
-  Note      : If the contractName corresponding contractVersion information not exists then the operation will fail. At this time, you can add first; The overwritten information can be queried through the historylistCommand and reset by resetCommand.
+  Feature    : Update contractName  
+  Note      : If the contractName corresponding contractVersion not exists then the operation will fail. So need add first; The overwritten information can be queried by historylistCommand and reset by resetCommand.
 
 ```javascript
 babel-node cns_manager.js update Test
@@ -184,7 +183,7 @@ Send transaction successfully: 0x1d3caff1fba49f5ad8af3d195999454d01c64d236d9ac3b
 ```
 - Command   : list 
   Parameter : [simple]
-  Function  : List all the information in the management contract. Print the details of the contract without the simple parameter. Otherwise, print only the contract name and version number. 
+  Feature    : List all the information. If no simple parameter then prints the contract details, else prints only the contract name and version number.
 
 ```javascript
 babel-node cns_manager.js list simple
@@ -205,7 +204,7 @@ cns_manager.js  ........................Begin........................
 
 - Command   : historylist 
   Parameter : 1. contractName  2. contractVersion [optional] 
-  Function  : List all contract information overwritten by the update operation
+  Feature    : List all contract information overwritten by the update
 ```javascript
 babel-node cns_manager.js historylist HelloWorld
 cns_manager.js  ........................Begin........................
@@ -232,13 +231,13 @@ cns_manager.js  ........................Begin........................
 ```
 - Command   : reset 
   Parameter : 1. contractName  2. contractVersion [optional] 3. index  
-  Function  : Reset the overwritten information, index is the index of the historylist query
+  Feature    : Reset the overwritten information, index is the index of the historylist
 
-#### c. RPC interface
+#### c. RPC
 
-Modify RPC's interface ensure supporting for the CNS call:
-> Note: Only modified the RPC interface, the original request method is still compatible.   
-> rpc format details reference:https://github.com/ethereum/wiki/wiki/JSON-RPC  
+Modify RPC to support CNS call:
+> Note: Only RPC interface has been modified so the original request is compatible.
+> RPC format details:https://github.com/ethereum/wiki/wiki/JSON-RPC  
 
 - eth_call  
 ```json  
@@ -249,10 +248,10 @@ request:
   "params": [
     {
       "data": {
-        "contract": "",   //name
-        "version": "",    //version
-        "func": "",       //interface
-        "params": [       //parameter information
+        "contract": "",
+        "version": "",
+        "func": "",
+        "params": [
 
         ]
       }
@@ -276,7 +275,7 @@ response:
 ```
 
 - eth_sendTransaction
-```shell
+```json
 request:
 {
   "jsonrpc": "2.0",
@@ -284,10 +283,10 @@ request:
   "params": [
     {
       "data": {
-        "contract": "",   //name
-        "version": "",    //version
-        "func": "",       //interface
-        "params": [       //parameter information
+        "contract": "",
+        "version": "",
+        "func": "",
+        "params": [
         ]
       },
       "randomid": "2"
@@ -305,19 +304,19 @@ response:
 ```
 
 - eth_sendRawTransaction
-  The rpc request and response format are exactly the same as before. The difference is that the previous rlp encoded data field is a hex string, and now the value of data is changed to:
+  The RPC request and response format are exactly the same as before. The difference is that the previous hex rlp string changed to:
 
 ```json
 "data": {
-        "contract": "",   //name
-        "version": "",    //version
-        "func": "",       //interface
-        "params": [       //Parameter information
+        "contract": "",
+        "version": "",
+        "func": "",
+        "params": [
         
         ]
       }
 ```
-#### d. RPC interface JS Encapsulation
+#### d. JS Encapsulation
 Path: web3lib/web3sync.js  
 Interface:
 ```
@@ -326,7 +325,7 @@ sendRawTransactionByNameService
 ```
 
 ## Examples
-This module provides some examples of CNS use in some scenarios for your reference
+Here is some examples of CNS usage for your reference
 
 ```solidity
 // Test contract
@@ -346,13 +345,13 @@ contract HelloWorld{
 }
 ```
 
-- Contract deployment:  
+- Deployment:  
   babel-node deploy.js HelloWorld  
->   In depoy.js, when the contract is deployed successfully, the cns_mangager add function is called by default, and the file name is considered to be the same as the contract name by default. If add failed, the person who needs subsequent deployment decides by himself:  
-1. If the file name is not the same as the contract name then needs to call 'cns_manager add' again. 
+>   In depoy.js, the cns_mangager add function is called by default when deployed successfully, and the file name is same as the contract name. If add failed then need:  
+1. If file name is not same as the contract name then needs to call 'cns_manager add' again. 
 2. If it's just the test contract then no need handle.
-3. If the same contract fixes the defect or needs to be upgraded for other reasons. then execute the update operation.
-4. If the currently added contract still needs to be called by CNS, then modifies the contract's version number (refer to multi-version deployment).
+3. If the same contract needs upgrade, then needs execute update.
+4. If the currently contract needs call CNS, then needs modifies the contract's version number (refer to multi-version deployment).
 ```javascript
     //examples of success
     babel-node deploy.js Test0
@@ -380,7 +379,7 @@ contract HelloWorld{
      
 ```
 -Multi-version Deployment  
-For the add operation, because the version number corresponding to the added contract already exists, the add operation will fail, so the version number of the contract can be updated, and the specific version number(Designated by ContractBase.sol) will be Inherited.
+For add operation, if the version number already exists, then add fail, but can be updated, and inherite the specific version number by ContractBase.sol.
 ```solidity
 pragma solidity ^0.4.4;
 contract HelloWorld is ContractBase("v-1.0"){
@@ -397,7 +396,7 @@ contract HelloWorld is ContractBase("v-1.0"){
 }
 ```
 deploy again
-```  
+```shell  
 babel-node deploy.js HelloWorld
 deploy.js  ........................Start........................
 Soc File :HelloWorld
@@ -414,33 +413,32 @@ Send transaction successfully: 0x9a409003f5a17220809dd8e1324a36a425acaf194efd3ef
 ```
 Now the contract version number is v-1.0
 
-- RPC interface calls
+- RPC calls
 ```shell
 
-1. Call HelloWorlddefault version(no specific version number) set interface
+1. Call HelloWorld default version(no specific version number) set
 curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"data":{"contract":"HelloWorld","version":"","func":"set","params":["call defaut version"]},"randomid":"3"}],"id":1}'  "http://127.0.0.1:8746"  
 
 {"id":1,"jsonrpc":"2.0","result":"0x77218708a73aa8c17fb9370a29254baa8f504e71b12d01d90eae0b2ef9818172"}
 
-2. Call HelloWorlddefault version(no specific version number) get interface
+2. Call HelloWorld default version(no specific version number) get
 curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_call","params":[{"data":{"contract":"HelloWorld","version":"","func":"get","params":[]}},"latest"],"id":1}'  "http://127.0.0.1:8746"  
 
 {"id":1,"jsonrpc":"2.0","result":"[\"call defaut version\"]\n"}
 
-3. Call HelloWorld version v-1.0 set interface
+3. Call HelloWorld version v-1.0 set
 curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[{"data":{"contract":"HelloWorld","version":"v-1.0","func":"set","params":["call v-1.0 version"]},"randomid":"4"}],"id":1}'  "http://127.0.0.1:8746"  
 
 {"id":1,"jsonrpc":"2.0","result":"0xf43349d7be554fd332e8e4eb0c69e23292ffa8d127b0500c21109b60784aaa1d"}
 
-4. Call HelloWorld version v-1.0 get interface
+4. Call HelloWorld version v-1.0 get
  curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_call","params":[{"data":{"contract":"HelloWorld","version":"v-1.0","func":"get","params":[]}},"latest"],"id":1}'  "http://127.0.0.1:8746"  
 
 {"id":1,"jsonrpc":"2.0","result":"[\"call v-1.0 version\"]\n"}
 ```
 
 - Contract upgrade  
-  Perform an update operation if the contract needs to be upgraded.  
-  Upgrade HelloWorld, first redeploy, as cns_manager added HelloWorld previously, so it will prompt to add failure, and then executes the update operation.
+  If upgrade HelloWorld, needs redeploy first, but as cns_manager already added HelloWorld before, so it will prompt to add failure, then executes the update.
 ```javascrpt
 babel-node cns_manager.js update HelloWorld
 cns_manager.js  ........................Begin........................
@@ -459,11 +457,11 @@ curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_call","params":[{"data":{"c
 {"id":1,"jsonrpc":"2.0","result":"[\"Hi,Welcome!\"]\n"}
 
 Return 'Hi,Welcome!'.
-That means the current contract called is the new contract that was just deployed.
+That means the current contract is the newly deployed contract.
 
 ```
-- CNS Contract reset  
-  If you need to get the original contract back after the update, then can execute reset operation.
+- Contract reset  
+  If needs to retrieve the original contract after the update, then use reset.
   First, find out how many updates are overwritten by the current version contract.
 ```javascript
 babel-node cns_manager.js historylist HelloWorld
@@ -511,27 +509,27 @@ Then call HelloWorld get interface again:
 curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_call","params":[{"data":{"contract":"HelloWorld","version":"","func":"get","params":[]}},"latest"],"id":1}'  "http://127.0.0.1:8746"  
 {"id":1,"jsonrpc":"2.0","result":"[\"call defaut version\"]\n"}
 
-The response is call defaut version, means that the current CNS called contract is the last overwritten contract.
+The response is defaut version, means that is the last overwritten contract.
 ```
 
 - jsCall   
 
 ```javascript
-//Call HelloWorld get interface
+//Call HelloWorld get
 var result = web3sync.callByNameService("HelloWorld","get","",[]);  
 
-//Call HelloWorld v-1.0 get interface
+//Call HelloWorld v-1.0 get
 var result = web3sync.callByNameService("HelloWorld","get","v-1.0",[]);  
 
-//Call HelloWorld set interface sendRawTransaction
+//Call HelloWorld set sendRawTransaction
 var result = web3sync.sendRawTransactionByNameService(config.account,config.privKey,"HelloWorld","set","",["test message!"]);  
 
-//Call HelloWorld v-1.0 set interface sendRawTransaction
+//Call HelloWorld v-1.0 set sendRawTransaction
 var result = web3sync.sendRawTransactionByNameService(config.account,config.privKey,"HelloWorld","set","v-1.0",["test message!"]); 
 ```
 
 ## Appendix One: Function overloading   
-solidity support function loading. When there are overloaded functions in solidity, the parameters using for CNS Call are different from the previous ones:
+solidity support function loading. The parameters are different when there are overloaded functions:
 
 ```
 //file : OverloadTest.sol
@@ -565,17 +563,17 @@ In OverloadTest.sol:
 set function is a overload function, one function prototype is set(string), the other one is set(uint256).  
 get function is also a overload function,, one function prototype is get(), the other one is get(uint256).
 
-Contract deployment:
+Deployment:
 
 ```
 babel-node deploy.js OverloadTest
 RPC=http://0.0.0.0:8546
 Ouputpath=./output/
 deploy.js  ........................Start........................
-OverloadTestCompiled successfully！
+OverloadTest Compiled successfully！
 Send transaction successfully: 0xff8a5708b3f7b335570a50639f2073e5e0b8b2002faa909dc75727059de94f4e
-OverloadTestContract address 0x919868496524eedc26dbb81915fa1547a20f8998
-OverloadTestDeployed successful ！
+OverloadTest Contract address 0x919868496524eedc26dbb81915fa1547a20f8998
+OverloadTest Deployed successful！
 cns add operation => cns_name = OverloadTest
          cns_name =>OverloadTest
          contract =>OverloadTest
@@ -586,7 +584,7 @@ cns add operation => cns_name = OverloadTest
 Send transaction successfully: 0x56e2267cd46fddc11abc4f38d605adc1f76d3061b96cf4026b09ace3502d2979
 ```
 
-> **For overload function, When using the CNS call method, the function parameter needs to specify the complete function prototype, other than just the name of the function.**:
+> **For overload function, needs to specify the complete function prototype, other than just the function name.**:
 
 When call get()， "func" is "get()";
 When call get(uint256 i), "func" is "get(uint256)";  
@@ -596,11 +594,11 @@ When call set(uint256 _u), "func" is "set(uint256)";
 Example:  
 
 ```
-Call get() interface:
+Call get():
 curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_call","params":[{"data":{"contract":"OverloadTest","version":"","func":"get","params":[]}},"latest"],"id":1}'  "http://127.0.0.1:8546"  
 {"id":1,"jsonrpc":"2.0","result":"[\"OverloadTest Test\"]\n"}
 
-Call get(uint256 i) interface:
+Call get(uint256 i):
 curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_call","params":[{"data":{"contract":"OverloadTest","version":"","func":"get(uint256)","params":[1]}},"latest"],"id":1}'  "http://127.0.0.1:8546"  
 {"id":1,"jsonrpc":"2.0","result":"[\"1\"]\n"}
 
@@ -611,13 +609,13 @@ jsCall set(uint256 _i)):
 var result = web3sync.sendRawTransactionByNameService(config.account,config.privKey,"OverloadTest","set(uint256)","",["0x111"]);
 ```
 
-## Appendix one: Java client usage.  
+## Appendix two: Java usage.  
 
-Let's still use the above HelloWorld.sol contract as an example.
+Let's still use the HelloWorld.sol contract as an example.
 
-1. Refer to the above process to deploy the HelloWorld.sol contract and use the cns_manager.js tool to register the HelloWorld contract information to the CNS management contract.
-2. Download web3sdk, the version number needs >= V1.1.0, web3sdk's usage and download: https://github.com/FISCO-BCOS/web3sdk
-3. The java wrap code using web3sdk generate HelloWorld [Reference tutorial](https://github.com/FISCO-BCOS/web3sdk#五合约编译及java-wrap代码生成). The package name in the example is org.bcos.cns, code as below:
+1. Deploy HelloWorld.sol and use the cns_manager.js to register HelloWorld to CNS management contract.
+2. Download web3sdk, the version number needs >= V1.1.0. web3sdk: https://github.com/FISCO-BCOS/web3sdk
+3. The java wrap code [reference tutorial](https://github.com/FISCO-BCOS/web3sdk#五合约编译及java-wrap代码生成) using web3sdk generate HelloWorld. The package name is org.bcos.cns, code as below:
 ```java
 package org.bcos.cns;
 
@@ -707,9 +705,9 @@ public final class HelloWorld extends Contract {
 }
 ```
 
-In the generated code there are two more loadByName functions.
+There are two more loadByName functions.
 
-4. Function Call  
+4. Function  
 
 ```
 package org.bcos.main;
@@ -767,14 +765,14 @@ public class Main {
 }
 
 ```
-**When the contract object is built by the loadByName method, then the contract object is passed through the contract interface by using CNS. **   
+**When the contract is built by the loadByName, then the contract called by CNS. **   
 
 > HelloWorld instance = HelloWorld.loadByName("HelloWorld", web3j, credentials, gasPrice , gasLimit);  
 
-HelloWorld's contract object is built by loadByName, so subsequent calls to get and set are by using CNS.
+HelloWorld's contract is built by loadByName, so get and set are called by CNS.
 
 * P.S.:  
-The loadByName prototype in the java Wrap code generated by the contract XX.sol is as follows:
+The java Wrap code loadByName prototype generated by contract XX.sol as follows:
 
 ```java
  public static XX loadByName(String contractName, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
@@ -785,12 +783,11 @@ public static XX loadByName(String contractName, Web3j web3j, TransactionManager
         return new XX(contractName, web3j, transactionManager, gasPrice, gasLimit, true);
     }
 ```
-The contractname parameter format is: the name of the contract @ contract version number, if the contract does not have a version number, it is the name of the contract.  
+The contractname format: contract name@version number, if the contract does not have a version number, then format is contract name.  
 
-5. Summary
-The steps to use the java client Call CNS:
+1. Summary
 a. Use JS tools to deploy contracts. 
-b. Use the cns_nameger.js tool to register contract information to the CNS management contract.  
-c. Use the websdk tool to generate the java wrap code for the contract. 
-d. Add the generated code to your own project, construct the contract object via loadByName interface.
-e. Call contract interface.
+b. Use the cns_nameger.js tool to register contract to CNS management contract.  
+c. Use the websdk tool to generate the java Wrap code. 
+d. Add the generated code to your own project, construct the contract by loadByName.
+e. Call contract.
