@@ -69,7 +69,7 @@ After compiling the contract, a description of the contract interface - ABI - ha
 ```
 
 Then deploy the contract to the blockchain and get an address, for example: 0x269ab4bc23b07efeb3c3fd52eecfc4cbe6a50859.
-Finally, use the address and ABI to call the contract. The key input parameters are address and ABI even there are various SDK tools. 
+Finally, use the ABI and address to call the contract. The key input parameters are ABI and address even there are various SDK tools. 
 
 ### 2. Brief to CNS
 
