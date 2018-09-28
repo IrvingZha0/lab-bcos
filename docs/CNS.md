@@ -85,7 +85,7 @@ When calling by CNS, pass the CNS name, version, function name and associated pa
 
 Below diagram shows the process and its advantages:
 
-![](./images/en_cns_1.png)
+![](./assets/en_cns_1.png)
 
 1. No need to maintain unfriendly ABI and contract address any more.
 2. Only needs the CNS name, interface and parameter.
@@ -95,7 +95,7 @@ Below diagram shows the process and its advantages:
 
 ### 1. Overall framework
 
-![](./images/en_cns_2.png)
+![](./assets/en_cns_2.png)
 
 The client calls the contract service by RPC, first it will visit contract naming service to get underlying business contract details(ABI and address), then constructing a call to business smart contract by its ABI and address, and finally return the results to the client.
 
