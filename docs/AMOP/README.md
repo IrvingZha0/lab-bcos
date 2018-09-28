@@ -1,22 +1,22 @@
 # AMOP(Advance Messages Onchain Protocol) Guidebook
 **Author: fisco-dev**  
 ## Introduction
-AMOP(Advance Messages Onchain Protocol) is aims to provide a safe and efficient message channel. In consortium chain, every organization which deployed the blockchain node, whether it is a consensus node or an observation node, can use AMOP as the message channel. AMOP has the following advantages:
-- Real-time: AMOP messages do not depend on blockchain transactions and consensus. Messages are transmitted in real time between nodes with a delay of milliseconds.  
-- Reliable: When the message is transmitted via AMOP, it will automatically search all feasible routes in the blockchain network for communication, and as long as at least one route is available for both the sender and the receiver, the message is guaranteed to be reachable. 
-- Efficient: AMOP message structure is concise, the processing logic is efficient, it only occupies a small amount of CPU, and makes full use of network bandwidth.
+AMOP(Advance Messages Onchain Protocol) is aims to provide a safe and efficient message channel. In consortium chain, every organization which deployed the blockchain node whether it is a consensus node or an observation node, can use AMOP as the message channel. AMOP has the following advantages:
+- Real-time: AMOP messages do not depend on blockchain transactions and consensus. Messages are transmitted in real time between nodes with a milliseconds delay.  
+- Reliable: When the message is transmitted by AMOP, it will automatically search all feasible routes in the blockchain network, and the message is guaranteed to be reachable as long as at least one route is available for both the sender and the receiver.
+- Efficient: AMOP message structure is concise and the processing logic is efficient, it only occupies a small amount of CPU and makes full use of network bandwidth.
 - Security: all communication routes using SSL encryption and the encryption algorithm can be configured.
-- Easy to use: No additional configuration is required as AMOP is embedded in the SDK.
+- Easy to use: AMOP is embedded in the SDK.
 
 ## Logical Architecture
 ![](./assets/amop_en.png)  
 Take the typical IDC(Internet Data Center) architecture of the bank as an example:  
 - SF(Server Farm) area: A business service area within an organizatioana. If there is no DMZ area, the sub-systems in SF area are using blockchain SDK. Conversely, configure the SDK to connect to the blockchain proxy of the DMZ area.
 - DMZ(Demilitarized Zone) area: The external network isolation area inside the organization. optional, it needs to deploy proxy if needed.
-- Blockchain P2P network: This area is a logical area which deploys blockchain nodes of each organization. The blockchain nodes can also be deployed inside the organization.
+- Blockchain P2P network: This area is a logical area which deploys nodes of each organization. The nodes can also be deployed inside the organization.
 
 ## Configuration
-AMOP does not require any additional configuration, The following is a configuration example for SDK:
+AMOP does not require any additional configuration, The configuration example:
 SDK configuration(Spring Bean):
 ```xml
 
@@ -52,7 +52,7 @@ SDK configuration(Spring Bean):
 					<bean class="cn.webank.channel.handler.ChannelConnections">
 						<property name="connectionsStr">
 							<list>
-								<value>NodeA@127.0.0.1:30333</value><!-- Format: Node name @ IP address: Port Node name can be any name -->
+								<value>NodeA@127.0.0.1:30333</value><!-- Format: Node name @ IP address: Port Node name can be any -->
 							</list>
 						</property>
 					</bean>
@@ -63,7 +63,7 @@ SDK configuration(Spring Bean):
 </bean>
 ```
 
-Proxy configuration, If there is a DMZ:
+Proxy configuration(if there is a DMZ):
 ```xml
 
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -84,7 +84,7 @@ Proxy configuration, If there is a DMZ:
 			<bean class="cn.webank.channel.handler.ChannelConnections">
 				<property name="connectionsStr">
 					<list>
-						<value>NodeA@127.0.0.1:5051</value><!-- Format: Node name @ IP address: Port Node name can be any name -->
+						<value>NodeA@127.0.0.1:5051</value><!-- Format: Node name @ IP address: Port Node name can be any -->
 					</list>
 				</property>
 			</bean>
@@ -94,16 +94,16 @@ Proxy configuration, If there is a DMZ:
 			<bean class="cn.webank.channel.handler.ChannelConnections">
 			</bean>
 		</property>
-		<!-- Proxy listening port configuration, for SDK connection -->
+		<!-- Proxy listening port configuration for SDK connection -->
 		<property name="bindPort" value="30333"/>
 	</bean>
 </beans>
 ```
 
 ## SDK Usage
-The messages sending and receiving via AMOP is based on the topic mechanism. The server sets up a topic first, then the client sends the message to the topic, afterward the server can receive the message.
+The messages sending and receiving by AMOP is based on the topic mechanism. The server sets up a topic first, then the client sends the message to the topic, then the server can receive the message.
 
-AMOP supports multiple topic messages sending and receiving in the same blockchain network, and the topic supports any number of servers and clients. When multiple servers are subscribed to the same topic, messages from the topic are sent randomly to one of the available servers.
+AMOP supports multiple topic messages sending and receiving in the same blockchain network, and the topic supports any number of servers and clients. When multiple servers are subscribed to the same topic, messages are sent randomly to one of the available servers.
 
 Server-side code example:
 
@@ -241,7 +241,7 @@ public class Channel2Client {
 ```
 
 ## Test
-After configuring as described above, the user specifies a topic: topic, and the following two commands can be used for testing. 
+After configuration, the user can specifies a topic: topic, and the following two commands are for testing. 
 
 Start AMOP server:
 
@@ -257,5 +257,5 @@ java -cp 'conf/:apps/*:lib/*' cn.webank.channel.test.Channel2Client [topic] [mes
 
 ## Error Code
 
-- 99: The message failed to be sent to the server after AMOP attempts to go through all routes. Suggest to use the seq generated during sending to check the processing status of each node on the route.
-- 102: Timeout. Suggest checking that if the server has handled the message correctly and if the bandwidth is adequate.
+- 99: The message sent failed after AMOP attempts to go through all routes. Suggest to use the seq which generated during sending, thus can check the status of every node on the route.
+- 102: Timeout. Suggest to check if the server has handled the message correctly and if the bandwidth is adequate.
