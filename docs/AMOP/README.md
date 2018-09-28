@@ -3,9 +3,9 @@
 ## Introduction
 AMOP(Advance Messages Onchain Protocol) is aims to provide a safe and efficient message channel. In consortium chain, every organization which deployed the blockchain node, whether it is a consensus node or an observation node, can use AMOP as the message channel. AMOP has the following advantages:
 - Real-time: AMOP messages do not depend on blockchain transactions and consensus. Messages are transmitted in real time between nodes with a delay of milliseconds.  
-- Reliable: When the message is transmitted via AMOP, it will automatically search all feasible links in the blockchain network for communication, and as long as at least one link is available for both the sender and the receiver, the message is guaranteed to be reachable. 
+- Reliable: When the message is transmitted via AMOP, it will automatically search all feasible routes in the blockchain network for communication, and as long as at least one route is available for both the sender and the receiver, the message is guaranteed to be reachable. 
 - Efficient: AMOP message structure is concise, the processing logic is efficient, it only occupies a small amount of CPU, and makes full use of network bandwidth.
-- Security: all communication links using SSL encryption and the encryption algorithm can be configured.
+- Security: all communication routes using SSL encryption and the encryption algorithm can be configured.
 - Easy to use: No additional configuration is required as AMOP is embedded in the SDK.
 
 ## Logical Architecture
@@ -257,5 +257,5 @@ java -cp 'conf/:apps/*:lib/*' cn.webank.channel.test.Channel2Client [topic] [mes
 
 ## Error Code
 
-- 99: The message failed to be sent to the server after AMOP attempts to go through all links. Suggest to use the seq generated during sending to check the processing status of each node on the link.
+- 99: The message failed to be sent to the server after AMOP attempts to go through all routes. Suggest to use the seq generated during sending to check the processing status of each node on the route.
 - 102: Timeout. Suggest checking that if the server has handled the message correctly and if the bandwidth is adequate.
