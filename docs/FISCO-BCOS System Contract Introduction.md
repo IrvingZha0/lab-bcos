@@ -138,8 +138,8 @@ Key functions:
 
 | contract                   | function            | input parameters                                     | output parameters      | description      |
 | --------------------- | ------------- | ---------------------------------------- | --------- | ------- |
-| TransactionFilterBase | process       | address origin #external address, address from#from account address, address to#to account address, string func#contract address, string input#transaction input| bool#result | permission checking    |
-| Group                 | setPermission | address to, string func, bool perrmission#to account address, contract address, permission flag | bool#result | set permission |
+| TransactionFilterBase | process       | address origin #external address<br>address from#from account address<br>address to#to account address<br>string func#contract address<br>string input#transaction input| bool#result | permission checking    |
+| Group                 | setPermission | address to#to account address<br>string func#contract address<br>bool permission#permission flag | bool#result | set permission |
 
 
 
