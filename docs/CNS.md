@@ -132,9 +132,9 @@ babel-node cns_manager.js
 List of utility methods:
 
 - Command    : add  
-  Parameter  : contractName  
-  Function   : add contract name to contract management  
-  Note       : If the contract name already exists then the operation will be failed. So needs: 1. change the contract version - specify the version number when calling by CNS. or 2. overwrite mapping in contract manager by calling 'update' command.
+- Parameter  : contractName  
+- Function   : add contract name to contract management  
+- Note       : If the contract name already exists then the operation will be failed. So needs: 1. change the contract version - specify the version number when calling by CNS. or 2. overwrite mapping in contract manager by calling 'update' command.
 
 ```javascript
 //first time add Test, success
@@ -152,8 +152,8 @@ cns_manager.js  ........................Begin........................
  [WARNING] cns add operation failed , ====> contract => Test version =>  is already exist. you can update it or change its version.
 ```
 - Command   : get  
-  Parameter : 1. contractName  2. contractVersion [optional]  
-  Feature    : Get contract information by name and version
+- Parameter : 1. contractName  2. contractVersion [optional]  
+- Feature    : Get contract information by name and version
 
 ```javascript
 babel-node cns_manager.js get HelloWorld
@@ -166,9 +166,9 @@ cns_manager.js  ........................Begin........................
          abi         = [{"constant":false,"inputs":[{"name":"n","type":"string"}],"name":"set","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"get","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
 ```
 - Command   : update 
-  Parameter : contractName
-  Feature    : Update stored contract information  
-  Note      : Failed when the corresponding contract does not exist. So needs add firstly; The overwritten information can be queried by 'historylist' command and reset by 'reset' command.
+- Parameter : contractName
+- Feature    : Update stored contract information  
+- Note      : Failed when the corresponding contract does not exist. So needs add firstly; The overwritten information can be queried by 'historylist' command and reset by 'reset' command.
 
 ```javascript
 babel-node cns_manager.js update Test
@@ -184,8 +184,8 @@ cns update operation => cns_name = Test
 Send transaction successfully: 0x1d3caff1fba49f5ad8af3d195999454d01c64d236d9ac3ba91350dd543b10c13
 ```
 - Command   : list 
-  Parameter : simple[optional]
-  Feature    : List all existing mapping in contract manager. Print contract name and version if simple had been provided. Otherwise print all details.
+- Parameter : simple[optional]
+- Feature    : List all existing mapping in contract manager. Print contract name and version if simple had been provided. Otherwise print all details.
 
 ```javascript
 babel-node cns_manager.js list simple
@@ -205,8 +205,8 @@ cns_manager.js  ........................Begin........................
 ```
 
 - Command   : historylist 
-  Parameter : 1. contract name  2. contract version [optional] 
-  Feature    : List all update history for provided contract
+- Parameter : 1. contract name  2. contract version [optional] 
+- Feature    : List all update history for provided contract
 ```javascript
 babel-node cns_manager.js historylist HelloWorld
 cns_manager.js  ........................Begin........................
@@ -232,13 +232,13 @@ cns_manager.js  ........................Begin........................
 
 ```
 - Command   : reset 
-  Parameter : 1. contract name  2. contract version [optional] 3. index  
-  Feature    : Reset the information in contract manager from the its history with specific index.
+- Parameter : 1. contract name  2. contract version [optional] 3. index  
+- Feature    : Reset the information in contract manager from the its history with specific index.
 
 #### c. RPC
 
 Modify RPC to support CNS call:
-> > Only wrap the RPC interface so it is still compatible to original Ethereum call.
+> Only wrap the RPC interface so it is still compatible to original Ethereum call.
 > RPC format details:https://github.com/ethereum/wiki/wiki/JSON-RPC  
 
 - eth_call  
