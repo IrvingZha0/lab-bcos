@@ -12,8 +12,8 @@
         - [Permissions Management](#permissions-management)
         - [Configuration Management](#configuration-management)
     - [Customizations](#customizations)
-        - [Example 1 - Custom Business Configured Contract](#example-1---custom-business-configured-contract)
-        - [Example 2 - Custom Business Permission Contract](#example-2---custom-business-permission-contract)
+        - [Example 1 - Custom Business Contract](#example-1---custom-business-contract)
+        - [Example 2 - Custom Permission Contract](#example-2---custom-permission-contract)
 
 <!-- /TOC -->
 
@@ -23,23 +23,23 @@ To meet the requirements of access control, identity authentication, configurati
 
 The system contract is deployed by admin during initialization. All nodes' agreement is necessary for post-init upgrade.
 
-FISCO BCOS system contract is composite of five modules: System Proxy, Node Management, CA Management, Permissions Management and Configuration Management. System contracts is extendable and can be used for both blockchain core system and DAPP. Each module is implemented by one or more smart contracts. The structure is as follows:
+FISCO BCOS system contract is composite of five modules: System Proxy, Node Management, CA Management, Permissions Management and Configuration Management. System contracts is extendable and can be called by both core system and DAPP. There could be one or more smart contracts in a module. The modules are below:
 
 ![module structure](./assets/systemcontract_module.png)
 
 ## How it works
 
-Code path: systemcontractv2/.
+Code path: systemcontractv2/. Brief each modules as below:
 
 ### System Proxy
 
-SystemProxy.sol, the system proxy's implementation, implements a mapping service between routes and contract address and provides a unified entrance. In SystemProxy.sol, proxy is maintained by a mapping type variable '_routes'. The proxy data structure:
+SystemProxy.sol, the system proxy's implementation, provides a mapping between route and contract address, unified system contract interface. In SystemProxy.sol, routing info is hold by a mapping field named as '_routes'. The value of mapping is structured as below:
 
 ```python
 struct SystemContract {
     address _addr;		#contract address
     bool _cache;		#cache flag
-    uint _blocknumber;		#block height
+    uint _blocknumber;		#block height when the contract is active
 }	
 ```
 
@@ -54,8 +54,8 @@ Key functions:
 
 ### Node Management
 
-NodeAction.sol, the node management's implementation, implements nodes' registration, management and maintenance. Node joins or quits the chain must controlled by node management contract.
-There are three node types: core node, full node, and light node.
+NodeAction.sol, the node management's implementation, provides nodes' registration, management and maintenance. Node joins or quits the chain must be controlled by node management contract.
+Three node types: Core, Full, and Light.
 
 ```solidity
 enum NodeType{
@@ -66,7 +66,7 @@ enum NodeType{
     }
 ```
 
-The node information data structure:
+Structure for node information:
 
 ```python
 struct NodeInfo{
@@ -93,9 +93,9 @@ Key functions:
 
 ### CA Management
 
-CAAction.sol, the CA management's implementation, implements nodes' certificate registration, management and maintenance. Node joins or quits the chain must controlled by CA management contract if certificate verification enabled.
+CAAction.sol, the CA management's implementation, provides nodes' certificate registration, management and maintenance. Node joins or quits the chain must controlled by CA management contract if certificate verification enabled.
 
-Certificate data structure:
+Structure for certificate data:
 
 ```python
 struct CaInfo{
@@ -122,17 +122,16 @@ Key functions:
 
 ### Permissions Management
 
-Permissions management has 3 key rules: 1, One external account only belongs to one role. 2, One role only has one permission list. 3, Contract address and contract interface uniquely identify a permission.
+Permissions management's design principles: 1, One external account only belongs to one role. 2, One role only has one permission list. 3, Permission is identified by a combination of function and its contract address.
 
-Key smart contracts: [TransactionFilterChain.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/TransactionFilterChain.sol), [TransactionFilterBase.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/TransactionFilterBase.sol), [AuthorityFilter.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/AuthorityFilter.sol), [Group.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/Group.sol).
+Permission module are composite of 4 contracts: [TransactionFilterChain.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/TransactionFilterChain.sol), [TransactionFilterBase.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/TransactionFilterBase.sol), [AuthorityFilter.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/AuthorityFilter.sol), [Group.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/Group.sol).
 
-TransactionFilterChain.sol, the implementation of Filter model, processes filter contract address list by inheriting TransactionFilterBase. and it exposes a unified 'process' method for permission checking. 'process' will be called by every contracts in filter contract address list for permission checking.
+TransactionFilterChain.sol, the implementation of Filter pattern, provides an unified function - process - for permission checking. It holds an address list of Filter contract extends from TransactionFilterBase. All permissions will be checked by calling process function of each Filter contract in sequence.
 
-TransactionFilterBase.sol, the base contract, every inherited Filter has to call the base 'process' method.
-
+A process method is mandatory for each filter which is extend from its base contract - TransactionFilterBase.sol
 AuthorityFilter, inheriting TransactionFilterBase, checks user group's permission.
 
-Group.sol handle role permission's mapping flag.
+Group.sol handles the concept of Role. It defines a role by flag the permissions.
 
 Key functions:
 
@@ -145,7 +144,7 @@ Key functions:
 
 ### Configuration Management
 
-ConfigAction.sol, the configuration management implementation, manages all the configurable information. The configuration is consistent on the chain by broadcasting transaction and only the admin can make transaction.
+ConfigAction.sol, the configuration management implementation, manages all configurable information. The configuration is consistent on all nodes by broadcasting transaction on chain, and only the admin can make configuration change.
 
 Key functions:
 
@@ -168,26 +167,26 @@ key items:
 
 ## Customizations
 
-### Example 1 - Custom Business Configured Contract
+### Example 1 - Custom Business Contract
 
-For the case like customized business-related smart contract:
+A case for the customized business, steps are below:
 
-1. Custom 'set' and 'get' base on business requirement.
+1. Implement 'set' and 'get' base on business requirement.
 2. Deploy business contract and get contract address.
-3. Call SystemProxy exposed method 'setRoute' to register contract to proxy.
-4. Business smart contract works.
+3. Call the 'setRoute' method in SystemProxy to register contract to route info.
+4. Business smart contract is ready for calling.
 
-how to use the business contract:
+how to call the business contract:
 
-1. Call SystemProxy exposed method 'getRoute' to get contract address.
-2. Pass contract address as parameter to 'get' method to get configuration information.
+1. Call the 'getRoute' method in SystemProxy to get contract address.
+2. Get configured information by calling the 'get' method with address in step 1.
 
-### Example 2 - Custom Business Permission Contract
+### Example 2 - Custom Permission Contract
 
-For the case like business needs more rigorous smart contract, extend Filter provided by permission management contract to meet the requirement.
+Permission checking can be extended by adding new Filter.
 
-1. Custom 'process' method inheriting TransactionFilterBase base on business permission contract.
-2. Deploy business permission contract and get contract address.
-3. Call SystemProxy exposed method 'getRoute' to get TransactionFilterChain contract address.
-4. Call TransactionFilterChain exposed method 'addFilter' to register contract to proxy.
-5. Business permission smart contract works.
+1. Create a Filter contract based on TransactionFilterBase. The custom permission checking should be put into the process method. 
+2. Deploy custom permission contract and get contract address.
+3. Call the 'getRoute' method in SystemProxy to get contract address of TransactionFilterChain.
+4. Register custom filter contract by calling 'addFilter' method in TransactionFilterChain.
+5. The contract is ready for calling.
