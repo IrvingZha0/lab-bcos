@@ -109,7 +109,7 @@ In contract manager, there is a mapping between the name and contract informatio
 - Implementation in code: systemcontractv2/ContractAbiMgr.sol  
 - Abstract Contract: tool/ContractBase.sol
 - Provide multi-version management by inheriting from ContractBase.sol, and initializing ContractAbiMgr with version number.
-- Note: ContractAbiMgr is managed by system contract, system contract should be deployed before applying CNS.
+> ContractAbiMgr is managed by system contract, system contract should be deployed before applying CNS.
 
 #### b. Utilities
 
@@ -238,7 +238,7 @@ cns_manager.js  ........................Begin........................
 #### c. RPC
 
 Modify RPC to support CNS call:
-> Note: Only wrap the RPC interface so it is still compatible to original Ethereum call.
+> > Only wrap the RPC interface so it is still compatible to original Ethereum call.
 > RPC format details:https://github.com/ethereum/wiki/wiki/JSON-RPC  
 
 - eth_call  
@@ -374,14 +374,14 @@ contract HelloWorld{
     babel-node deploy.js HelloWorld
     deploy.js  ........................Start........................
     Soc File :HelloWorld
-    HelloWorldCompiled successfully！
-    HelloWorldContract address 0xc3869f3d9a5fc728de82cc9c807e85b77259aa3a
-    HelloWorldDeployed successful ！
+    HelloWorld Compiled successfully！
+    HelloWorld Contract address 0xc3869f3d9a5fc728de82cc9c807e85b77259aa3a
+    HelloWorld Deployed successful ！
      [WARNING] cns add operation failed , ====> contract => HelloWorld version =>  is already exist. you can update it or change its version.
      
 ```
--Multi-version Deployment
-'cns_manager add' is failed due to the version already exists. Modify contract version by providing version number in the contructor of ContractBase.sol.  
+Multi-version Deployment
+'cns_manager add' is failed due to the version already exists. Modify contract version by providing version number in the constructor of ContractBase.sol.  
 
 ```solidity
 pragma solidity ^0.4.4;
@@ -441,8 +441,8 @@ curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[
 ```
 
 - Upgrade contract
-  Contract can be upgraded by update command.
-  Redeploy to upgrade HelloWorld, but as cns_manager already added HelloWorld before, it will be failed when adding. Need to execute update command instead.
+  Contract can be upgraded by 'update' command.
+  Redeploy to upgrade HelloWorld, but as cns_manager already added HelloWorld before, it will be failed when adding. Need to execute 'update' command instead.
 ```javascrpt
 babel-node cns_manager.js update HelloWorld
 cns_manager.js  ........................Begin........................
@@ -465,8 +465,8 @@ That means the current contract is the newly deployed contract.
 
 ```
 - Reset contract  
-  Use reset to recover the original contract after the update.
-  First, list history of update.
+  Use 'reset' to recover the original contract after the update.
+  First, list history of update. ???
 ```javascript
 babel-node cns_manager.js historylist HelloWorld
 cns_manager.js  ........................Begin........................
@@ -513,7 +513,7 @@ Then call HelloWorld get again:
 curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_call","params":[{"data":{"contract":"HelloWorld","version":"","func":"get","params":[]}},"latest"],"id":1}'  "http://127.0.0.1:8746"  
 {"id":1,"jsonrpc":"2.0","result":"[\"call defaut version\"]\n"}
 
-The response is 'call defaut version' means that is the last contract.
+The response is 'call defaut version' means that is the latest contract.
 ```
 
 - jsCall   
@@ -565,7 +565,7 @@ contract OverloadTest {
 ```
 In OverloadTest.sol:  
 set function is a overload function, one function prototype is set(string), the other one is set(uint256).  
-get function is also a overload function,, one function prototype is get(), the other one is get(uint256).
+get function is also a overload function, one function prototype is get(), the other one is get(uint256).
 
 Deployment:
 
@@ -588,7 +588,7 @@ cns add operation => cns_name = OverloadTest
 Send transaction successfully: 0x56e2267cd46fddc11abc4f38d605adc1f76d3061b96cf4026b09ace3502d2979
 ```
 
-> **The overload function needs to specify the complete function prototype other than just the function name.**:
+> **The overload function needs to specify the complete function prototype other than just the function name**:
 
 When call get()， "func" is "get()";
 When call get(uint256 i), "func" is "get(uint256)";  
@@ -619,7 +619,7 @@ Take HelloWorld.sol contract as an example:
 
 1. Deploy HelloWorld.sol and use the cns_manager.js to register HelloWorld to contract manager.
 2. Download [web3sdk](https://github.com/FISCO-BCOS/web3sdk), the version needs >= V1.1.0.
-3. The HelloWorld java wrap code [reference tutorial](https://github.com/FISCO-BCOS/web3sdk#五合约编译及java-wrap代码生成)generate with web3sdk. Package 'org.bcos.cns' code as below:
+3. The HelloWorld java wrap code [reference tutorial](https://github.com/FISCO-BCOS/web3sdk#五合约编译及java-wrap代码生成) generate with web3sdk. Package 'org.bcos.cns' code as below:
 ```java
 package org.bcos.cns;
 
@@ -752,7 +752,7 @@ public class Main {
     	BigInteger gasPrice = new BigInteger("99999999");
     	BigInteger gasLimit = new BigInteger("99999999");
     	
-    	//Use CNS call the contract when the contract is create by loadByName.
+    	//Use CNS call the contract when the contract is created by loadByName.
     	HelloWorld instance = HelloWorld.loadByName("HelloWorld", web3j, credentials, gasPrice , gasLimit);
     	
     	//Call HelloWorld set
@@ -769,14 +769,15 @@ public class Main {
 }
 
 ```
-**Use CNS call the contract when the contract is create by loadByName. **   
+**Use CNS call the contract when the contract is created by loadByName.**  
 
-> HelloWorld instance = HelloWorld.loadByName("HelloWorld", web3j, credentials, gasPrice , gasLimit);  
-
-The 'get' and 'set' are called like CNS as the contract is create by loadByName.
+```java
+ HelloWorld instance = HelloWorld.loadByName("HelloWorld", web3j, credentials, gasPrice , gasLimit);  
+```
+The 'get' and 'set' are called like CNS as the contract is created by loadByName.
 
 * P.S.:  
-The java Wrap code loadByName prototype generated by XX.sol as follows:
+The java Wrap code loadByName prototype is generated by XX.sol as follows:
 
 ```java
  public static XX loadByName(String contractName, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
@@ -787,11 +788,11 @@ public static XX loadByName(String contractName, Web3j web3j, TransactionManager
         return new XX(contractName, web3j, transactionManager, gasPrice, gasLimit, true);
     }
 ```
-The contractname format: contract name@version number, if the contract does not have a version number, then format is contract name.  
+The contract name format: contract name@version number, if the contract does not have a version number, then format is contract name.  
 
-5. Summary
-a. Use JS tools to deploy contracts. 
+1. Summary
+a. Use JS tool to deploy contracts. 
 b. Use the cns_nameger.js tool to register contract to contract manager.  
-c. Use the websdk tool to generate the java wrap code. 
+c. Use the web3sdk tool to generate the java wrap code. 
 d. Add the java wrap code to project and create contract by loadByName.
 e. Call contract.
