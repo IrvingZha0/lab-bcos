@@ -33,7 +33,7 @@ Code path: systemcontractv2/.
 
 ### System Proxy
 
-SystemProxy.sol, the system proxy's implementation, implements a mapping service between routes and contract address and provides a unified entrace. In SystemProxy.sol, proxy is maintained by a mapping type variable '_routes'. The proxy data structure:
+SystemProxy.sol, the system proxy's implementation, implements a mapping service between routes and contract address and provides a unified entrance. In SystemProxy.sol, proxy is maintained by a mapping type variable '_routes'. The proxy data structure:
 
 ```python
 struct SystemContract {
@@ -102,7 +102,7 @@ struct CaInfo{
         string  hash;		#certificate hash
         string pubkey;		#certificate public key
         string orgname;		#organization name
-        uint notbefore;		#certificate effictive date
+        uint notbefore;		#certificate effective date
         uint notafter;		#certificate expire date
         CaStatus status;	#certificate status
         string    whitelist;	#IP whitelist
@@ -116,7 +116,7 @@ Key functions:
 | function     | input parameters                                     | output parameters                                     | description                        |
 | ------ | ---------------------------------------- | ---------------------------------------- | ------------------------- |
 | update | string _hash<br>string _pubkey<br>string _orgname<br>uint _notbefore<br>uint _notafter<br>CaStatus _status<br>string _whitelist<br>string _blacklist | bool #result                               | update certificate<br>create certificate if certificate not exists |
-| get    | string _hash                        | string#certificate hash<br>string#certificate public key<br>string#organization name<br>uint#certificate effictive date<br>uint#certificate expire date<br>CaStatus#certificate status<br>uint##block height | get certificate information                    |
+| get    | string _hash                        | string#certificate hash<br>string#certificate public key<br>string#organization name<br>uint#certificate effective date<br>uint#certificate expire date<br>CaStatus#certificate status<br>uint##block height | get certificate information                    |
 
 
 
@@ -130,7 +130,7 @@ TransactionFilterChain.sol, the implementation of Filter model, processes filter
 
 TransactionFilterBase.sol, the base contract, every inherited Filter has to call the base 'process' method.
 
-AuthorityFilter, inherting TransactionFilterBase, checks user group's permission.
+AuthorityFilter, inheriting TransactionFilterBase, checks user group's permission.
 
 Group.sol handle role permission's mapping flag.
 
@@ -186,7 +186,7 @@ how to use the business contract:
 
 For the case like business needs more rigorous smart contract, extend Filter provided by permission management contract to meet the requirement.
 
-1. Custom 'process' method inherting TransactionFilterBase base on business permission contract.
+1. Custom 'process' method inheriting TransactionFilterBase base on business permission contract.
 2. Deploy business permission contract and get contract address.
 3. Call SystemProxy exposed method 'getRoute' to get TransactionFilterChain contract address.
 4. Call TransactionFilterChain exposed method 'addFilter' to register contract to proxy.
