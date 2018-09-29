@@ -37,7 +37,7 @@ SystemProxy.sol, the system proxy's implementation, implements a mapping service
 
 ```python
 struct SystemContract {
-    address _addr;		#contract adress
+    address _addr;		#contract address
     bool _cache;		#cache flag
     uint _blocknumber;		#block height
 }	
