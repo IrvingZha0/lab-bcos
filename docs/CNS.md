@@ -466,7 +466,7 @@ That means the current contract is the newly deployed contract.
 ```
 - Reset contract  
   Use 'reset' to recover the original contract after the update.
-  First, list history of update. ???
+  First, list history of updated contract.
 ```javascript
 babel-node cns_manager.js historylist HelloWorld
 cns_manager.js  ........................Begin........................
@@ -496,7 +496,7 @@ cns_manager.js  ........................Begin........................
          timestamp   = 1516866720115 => 2018/1/25 15:52:0:115
          abi         = [{"constant":false,"inputs":[{"name":"n","type":"string"}],"name":"set","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"get","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
 
-Then find out which contract need to be retrieved.
+Then find out which history item need to be retrieved.
 babel-node cns_manager.js reset HelloWorld 3
 cns_manager.js  ........................Begin........................
  ====> Are you sure update the cns of the contract ?(Y/N)
@@ -509,14 +509,14 @@ cns update operation => cns_name = HelloWorld
          abi      =>[{"constant":false,"inputs":[{"name":"n","type":"string"}],"name":"set","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"get","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
 Send transaction successfully: 0x4809a6105916a483ca70c4efe8e306bc01ca5d937515320d09e94a83f4a91b76
 
-Then call HelloWorld get again:
+Then execute 'get' command with contract name as HelloWorld one more time:
 curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_call","params":[{"data":{"contract":"HelloWorld","version":"","func":"get","params":[]}},"latest"],"id":1}'  "http://127.0.0.1:8746"  
 {"id":1,"jsonrpc":"2.0","result":"[\"call defaut version\"]\n"}
 
-The response is 'call defaut version' means that is the latest contract.
+'call defaut version' in repsonse shows it is the latest contract.
 ```
 
-- jsCall   
+- Call by Javascript   
 
 ```javascript
 //Call HelloWorld get
@@ -532,8 +532,8 @@ var result = web3sync.sendRawTransactionByNameService(config.account,config.priv
 var result = web3sync.sendRawTransactionByNameService(config.account,config.privKey,"HelloWorld","set","v-1.0",["test message!"]); 
 ```
 
-## Appendix One: Function overloading   
-Solidity supports function overloading with different parameters:
+## Appendix One: Function overload   
+Solidity supports function overload. The value format of input 'func' parameter is different to original when calling overloaded function:
 
 ```solidity
 //file : OverloadTest.sol
@@ -564,8 +564,8 @@ contract OverloadTest {
 }
 ```
 In OverloadTest.sol:  
-set function is a overload function, one function prototype is set(string), the other one is set(uint256).  
-get function is also a overload function, one function prototype is get(), the other one is get(uint256).
+set function is a overload function, one function is set(string), the other is set(uint256).  
+get function is also a overload function, one function is get(), the other is get(uint256).
 
 Deployment:
 
@@ -588,7 +588,7 @@ cns add operation => cns_name = OverloadTest
 Send transaction successfully: 0x56e2267cd46fddc11abc4f38d605adc1f76d3061b96cf4026b09ace3502d2979
 ```
 
-> **The overload function needs to specify the complete function prototype other than just the function name**:
+> **The overload function needs to specify the full function signature other than just the name**:
 
 When call get()， "func" is "get()";
 When call get(uint256 i), "func" is "get(uint256)";  
@@ -606,20 +606,20 @@ Call get(uint256 i):
 curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_call","params":[{"data":{"contract":"OverloadTest","version":"","func":"get(uint256)","params":[1]}},"latest"],"id":1}'  "http://127.0.0.1:8546"  
 {"id":1,"jsonrpc":"2.0","result":"[\"1\"]\n"}
 
-jsCall set(string _msg):
+Call set(string _msg) by Javascript:
 var result = web3sync.sendRawTransactionByNameService(config.account,config.privKey,"OverloadTest","set(string)","",["test message!"]);
  
 jsCall set(uint256 _i)):
 var result = web3sync.sendRawTransactionByNameService(config.account,config.privKey,"OverloadTest","set(uint256)","",["0x111"]);
 ```
 
-## Appendix two: Usage in Java  
+## Appendix two: RPC called by Java  
 
 Take HelloWorld.sol contract as an example:
 
 1. Deploy HelloWorld.sol and use the cns_manager.js to register HelloWorld to contract manager.
 2. Download [web3sdk](https://github.com/FISCO-BCOS/web3sdk), the version needs >= V1.1.0.
-3. The HelloWorld java wrap code [reference tutorial](https://github.com/FISCO-BCOS/web3sdk#五合约编译及java-wrap代码生成) generate with web3sdk. Package 'org.bcos.cns' code as below:
+3. The HelloWorld Java wrapper [reference tutorial](https://github.com/FISCO-BCOS/web3sdk#五合约编译及java-wrap代码生成) generated with web3sdk. Package - 'org.bcos.cns' - as below:
 ```java
 package org.bcos.cns;
 
@@ -709,9 +709,9 @@ public final class HelloWorld extends Contract {
 }
 ```
 
-Two more loadByName functions are generated.
+Two additional loadByName methods are generated for CNS call.
 
-4. Call the function
+4. Call the method by contract name
 
 ```
 package org.bcos.main;
@@ -769,15 +769,15 @@ public class Main {
 }
 
 ```
-**Use CNS call the contract when the contract is created by loadByName.**  
+**CNS can be used to call contract function if the contract instance had been created by loadByName.** 
 
 ```java
  HelloWorld instance = HelloWorld.loadByName("HelloWorld", web3j, credentials, gasPrice , gasLimit);  
 ```
-The 'get' and 'set' are called like CNS as the contract is created by loadByName.
+The 'get' and 'set' function are called by CNS as the contract instance is created by loadByName.
 
 * P.S.:  
-The java Wrap code loadByName prototype is generated by XX.sol as follows:
+The Java wrapper method - loadByName - is generated by XX.sol as follows:
 
 ```java
  public static XX loadByName(String contractName, Web3j web3j, Credentials credentials, BigInteger gasPrice, BigInteger gasLimit) {
@@ -788,11 +788,11 @@ public static XX loadByName(String contractName, Web3j web3j, TransactionManager
         return new XX(contractName, web3j, transactionManager, gasPrice, gasLimit, true);
     }
 ```
-The contract name format: contract name@version number, if the contract does not have a version number, then format is contract name.  
+The value format of contractName input parameter is: contractName@version, version is optional.
 
-1. Summary
-a. Use JS tool to deploy contracts. 
+5. Summary
+a. Use Javascript tool to deploy contracts. 
 b. Use the cns_nameger.js tool to register contract to contract manager.  
-c. Use the web3sdk tool to generate the java wrap code. 
-d. Add the java wrap code to project and create contract by loadByName.
-e. Call contract.
+c. Use the websdk tool to generate the Java wrapper. 
+d. Add the Java wrapperto project and create contract by loadByName.
+e. Call contract function.
