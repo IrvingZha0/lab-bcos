@@ -150,17 +150,17 @@ Key functions:
 
 | function   | input parameters                              | output parameters                     | description    |
 | ---- | --------------------------------- | ------------------------ | ----- |
-| set  | string key #item<br>string value#config information value | N/A                        | set configuration |
-| get  | string key #item                   | string #config information<br> uint#block height | get configuration |
+| set  | string key #parameter<br>string value#config information value | N/A                        | set configuration |
+| get  | string key #parameter                   | string #config information<br> uint#block height | get configuration |
 
-key items:
+key parameters:
 
-| item                  | description                           | default value       | recommend value         |
+| parameter                  | description                           | default value       | recommend value         |
 | -------------------- | ---------------------------- | --------- | ----------- |
 | maxBlockHeadGas      | block max GAS (Hex)                | 200000000 | 20000000000 |
 | intervalBlockTime    | block interval time(ms) (Hex)               | 1000      | 1000        |
 | maxBlockTranscations | block max transactions(Hex)                 | 1000      | 1000        |
-| maxNonceCheckBlock   | max transaction nonce(Hex)         | 1000      | 1000        |
+| maxNonceCheckBlock   | max number of blocks checking by Nonce(Hex)         | 1000      | 1000        |
 | maxBlockLimit        | max block offset(Hex) | 1000      | 1000        |
 | maxTranscationGas    | max transaction gas(Hex)               | 20000000  | 20000000    |
 | CAVerify             | CA verification flag                       | FALSE     | FALSE       |
