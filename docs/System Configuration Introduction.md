@@ -1,86 +1,86 @@
-# System Configuration Introduction #
+# Guide to System Configuration#
 **Author: fisco-dev**   
 ## Design Overview ##
 
-To make sure the configuration is consistent on all nodes, FISCO BCOS has a system manages the configuration information by smart contract:
+There are many distributed nodes in a block chain.To make sure the configuration is sync on all nodes, a mechanism had been built in FISCO BCOS with smart contract to sync up the configuration cross all nodes:
 
 ![reference](./assets/sys_para.png)
 
-## System Configuration List ##
+## System Properties ##
 ### maxBlockTranscations ###
-Description: block max transactions
+Description: configure the max transaction in a block
 
 Value: (0,2000]
 
-Default value: 1000
+Default: 1000
 
 ### intervalBlockTime ###
-Description: max block generating interval time(ms)
+Description: an interval btw block generation(ms)
 
 Value: >= 1,000
 
-Default value: 1,000
+Default: 1,000
 
 ### maxBlockHeadGas ###
-Description: max block Gas
+Description: Gas spend limitation for each block
 
 Value: >= 2,000,000,000
 
-Default value: 2,000,000,000
+Default: 2,000,000,000
 
 ### maxTranscationGas ###
-Description: max transaction Gas
+Description: Gas spend limitation for each transaction
 
 Value: >= 30,000,000
 
-Default value: 30,000,000
+Default: 30,000,000
 
 ### maxNonceCheckBlock ###
-Description: max number of blocks checking by Nonce
+Description: Trace back max previous block number to avoid nonce duplication.
 
 Value: >= 1000
 
-Default value: 1000
+Default: 1000
 
 ### maxBlockLimit ###
-Description: max block offset
+Description: max delay for transaction commit
 
 Value: >= 1000
 
-Default value: 1000
+Default: 1000
 
 ### CAVerify ###
-Description: CA verification flag 
+Description: enable CA verification 
 
 Value: true/false
 
-Default value: false
+Default: false
 
 ### omitEmptyBlock ###
-Description: ignore empty blocks store to disk
+Description: skip empty blocks(will not store the block when there is no transaction)
 
 Value: true/false
 
-Default value: true
+Default: true
 
-## How to update configuration ##
+## update configuration ##
 
-> Configuration can be updated on any nodes but recommend using genesis block.
+> Configuration can be updated by calling system contract on any nodes but recommend using genesis node.
 
-update configuration information: 
+Command to update configuration: 
 
     babel-node tool.js ConfigAction set [parameter] [value]
 
-get configuration information: 
+Command to get configuration: 
 
     babel-node tool.js ConfigAction get [parameter]
 
-update block generating interval time (Note: get/set needs HEX format parameter)
+An example to change block generation interval (Note: get/set needs HEX string as parameter)
 
     cd systemcontractv2;
     babel-node tool.js ConfigAction set  intervalBlockTime 1000
 
-enable empty blocks store to disk
+allow to commit empty block
 
     cd systemcontractv2;
     babel-node tool.js ConfigAction set  omitEmptyBlock false
