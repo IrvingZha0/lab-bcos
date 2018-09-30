@@ -157,12 +157,12 @@ key parameters:
 
 | parameter                  | description                           | default value       | recommend value         |
 | -------------------- | ---------------------------- | --------- | ----------- |
-| maxBlockHeadGas      | block max GAS (Hex)                | 200000000 | 20000000000 |
-| intervalBlockTime    | block interval time(ms) (Hex)               | 1000      | 1000        |
-| maxBlockTranscations | block max transactions(Hex)                 | 1000      | 1000        |
-| maxNonceCheckBlock   | max number of blocks checking by Nonce(Hex)         | 1000      | 1000        |
-| maxBlockLimit        | max block offset(Hex) | 1000      | 1000        |
-| maxTranscationGas    | max transaction gas(Hex)               | 20000000  | 20000000    |
+| maxBlockHeadGas      | Gas spend limitation for each block (Hex)                | 200000000 | 20000000000 |
+| intervalBlockTime    | an interval btw block generation(ms) (Hex)               | 1000      | 1000        |
+| maxBlockTranscations | configure the max transaction in a block(Hex)                 | 1000      | 1000        |
+| maxNonceCheckBlock   | Trace back max previous block number to avoid nonce duplication.(Hex)         | 1000      | 1000        |
+| maxBlockLimit        | max delay for transaction commit(Hex) | 1000      | 1000        |
+| maxTranscationGas    | Gas spend limitation for each transaction(Hex)               | 20000000  | 20000000    |
 | CAVerify             | CA verification flag                       | FALSE     | FALSE       |
 
 ## Customizations
