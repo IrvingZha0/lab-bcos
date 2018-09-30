@@ -1,23 +1,22 @@
 # AMOP(Advance Messages Onchain Protocol) Guidebook
 **Author: fisco-dev**  
 ## Introduction
-AMOP(Advance Messages Onchain Protocol) is aims to provide a safe and efficient message channel. In consortium chain, every organization which deployed the blockchain node whether it is a consensus node or an observation node, can use AMOP as the message channel. AMOP has the following advantages:
-- Real-time: AMOP messages do not depend on blockchain transactions and consensus. Messages are transmitted in real time between nodes with a milliseconds delay.  
-- Reliable: When the message is transmitted by AMOP, it will automatically search all feasible routes in the blockchain network, and the message is guaranteed to be reachable as long as at least one route is available for both the sender and the receiver.
-- Efficient: AMOP message structure is concise and the processing logic is efficient, it only occupies a small amount of CPU and makes full use of network bandwidth.
-- Security: all communication routes using SSL encryption and the encryption algorithm can be configured.
+AMOP(Advance Messages Onchain Protocol) aims to provide a safe and efficient message channel. In consortium chain, all nodes, no matter consensus node or observation node, can use AMOP as the message channel with the following advantages:
+- Real-time: AMOP messages do not rely on transactions and consensus. Messages are transmitted between nodes with a milliseconds delay.  
+- Reliable: When the message is transmitted by AMOP, it will leverage any feasible routes in the blockchain network, and the message is guaranteed to be reachable as long as at least one route is available between sender and receiver node.
+- Efficient: AMOP protocal is concise and clean. It takes very minimized CPU and network bandwidth.
+- Security: Supports SSL encryption on network and the encryption algorithm can be configured.
 - Easy to use: AMOP is embedded in the SDK.
 
-## Logical Architecture
+## Network Architecture
 ![](./assets/amop_en.png)  
-Take the typical IDC(Internet Data Center) architecture of the bank as an example:  
-- SF(Server Farm) area: A business service area within an organizatioana. If there is no DMZ area, the sub-systems in SF area are using blockchain SDK. Conversely, configure the SDK to connect to the blockchain proxy of the DMZ area.
-- DMZ(Demilitarized Zone) area: The external network isolation area inside the organization. optional, it needs to deploy proxy if needed.
-- Blockchain P2P network: This area is a logical area which deploys nodes of each organization. The nodes can also be deployed inside the organization.
+Take the classic IDC(Internet Data Center) bank architecture as an example:  
+- SF(Server Farm) area: An internal business service area. Application in SF can use SDK to transfer message by AMOP. Setup SDK to link to the blockchain proxy in DMZ. If no DMZ, link to blockchain node directly.
+- DMZ(Demilitarized Zone) area: External network isolation area. The area is optional. Blockchain proxy should be deployed in DMZ if DMZ exists.
+- Blockchain P2P network: The logical area which deploys the node of each organization. It is not mandatory since the nodes can also be deployed in SF area.
 
 ## Configuration
-AMOP does not require any additional configuration, The configuration example:
-SDK configuration(Spring Bean):
+No additional configuration needed, SDK configuration example(Spring Bean):
 ```xml
 
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -32,7 +31,7 @@ SDK configuration(Spring Bean):
 			http://www.springframework.org/schema/aop   
 	http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 	
-<!-- AMOP message processing thread pool configuration, Configure according to actual needs -->
+<!-- Thread pool configuration, config as needs -->
 <bean id="pool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
 	<property name="corePoolSize" value="50" />
 	<property name="maxPoolSize" value="100" />
@@ -43,12 +42,12 @@ SDK configuration(Spring Bean):
 	</property>
 </bean>
 
-<!-- Block chain nodes configuration -->
+<!-- Blockchain nodes configuration -->
 <bean id="channelService" class="cn.webank.channel.client.Service">
 	<property name="orgID" value="WB" /> <!-- Configure the organization's name -->
 		<property name="allChannelConnections">
 			<map>
-				<entry key="WB"> <!-- Configure the organization's blockchain node list (If there is a DMZ, it is the proxy)-->
+				<entry key="WB"> <!-- Setup SDK to link to the blockchain proxy in DMZ. If no DMZ, link to blockchain node directly.-->
 					<bean class="cn.webank.channel.handler.ChannelConnections">
 						<property name="connectionsStr">
 							<list>
@@ -63,7 +62,7 @@ SDK configuration(Spring Bean):
 </bean>
 ```
 
-Proxy configuration(if there is a DMZ):
+Proxy configuration in DMZ:
 ```xml
 
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -78,7 +77,7 @@ Proxy configuration(if there is a DMZ):
 			http://www.springframework.org/schema/aop   
 	http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 	
-	<!-- Block chain nodes configuration -->
+	<!-- Blockchain nodes configuration -->
 	<bean id="proxyServer" class="cn.webank.channel.proxy.Server">
 		<property name="remoteConnections">
 			<bean class="cn.webank.channel.handler.ChannelConnections">
@@ -94,18 +93,18 @@ Proxy configuration(if there is a DMZ):
 			<bean class="cn.webank.channel.handler.ChannelConnections">
 			</bean>
 		</property>
-		<!-- Proxy listening port configuration for SDK connection -->
+		<!-- Proxy listening port config for SDK connection -->
 		<property name="bindPort" value="30333"/>
 	</bean>
 </beans>
 ```
 
-## SDK Usage
-The messages sending and receiving by AMOP is based on the topic mechanism. The server sets up a topic first, then the client sends the message to the topic, then the server can receive the message.
+## How to use SDK
+The messages sending and receiving by AMOP is based on TOPIC pattern. A topic had been created and subscribed by server. Once client sends message to the topic, the server can get it.
 
-AMOP supports multiple topic messages sending and receiving in the same blockchain network, and the topic supports any number of servers and clients. When multiple servers are subscribed to the same topic, messages are sent randomly to one of the available servers.
+Multiple topic is supported in a block chain. There is no limitation for the number of servers and clients. The message will be sent to one of the servers randomly if there are multiple servers subscribe the same topic.
 
-Server-side code example:
+Server-side example:
 
 ```java
 
@@ -149,7 +148,7 @@ public class Channel2Server {
 	}
 }
 ```
-Server-side PushCallback class example:
+Server-side PushCallback example:
 
 ```java
 
@@ -241,21 +240,21 @@ public class Channel2Client {
 ```
 
 ## Test
-After configuration, the user can specifies a topic: topic, and the following two commands are for testing. 
+After configuration like above, user can use the following two commands for testing.
 
 Start AMOP server:
 
 ```
-java -cp 'conf/:apps/*:lib/*' cn.webank.channel.test.Channel2Server [topic]
+java -cp 'conf/:apps/*:lib/*' cn.webank.channel.test.Channel2Server [topic name]
 ```  
 
 Start AMOP client
 
 ```
-java -cp 'conf/:apps/*:lib/*' cn.webank.channel.test.Channel2Client [topic] [message content] [Number of messages]
+java -cp 'conf/:apps/*:lib/*' cn.webank.channel.test.Channel2Client [topic name] [message content] [number of messages]
 ```
 
 ## Error Code
 
-- 99: The message sent failed after AMOP attempts to go through all routes. Suggest to use the seq which generated during sending, thus can check the status of every node on the route.
-- 102: Timeout. Suggest to check if the server has handled the message correctly and if the bandwidth is adequate.
+- 99: Message sending failure since there is no available routes. Suggest to check the node status in the supposed by the 'seq' generated at message sending.
+- 102: Timeout. Suggest to check if the server has handled the message smoothly and enough bandwidth.
