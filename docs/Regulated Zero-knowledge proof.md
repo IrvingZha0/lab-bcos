@@ -8,7 +8,7 @@ To meet the regulation requirement, when FISCO BCOS providing users zero-knowled
 
 **Zero-knowledge proof on blockchain**: User needs convert the data which needs to maintain secrecy also needs to be verified to proof and provide the proof for blockchain nodes. The blockchain node verifies the correctness of the secret data without knowing the user's secret data. Nobody can speculate the secret data by the proof, so there is regulatory risk.
 
-**FISCO-BCOS regulated Zero-knowledge proof**: In FISCO BCOS, any zero-knowledge proof operation can be decrypted and regulated by the regulator. FISCO-BCOS node is the verifier.
+**FISCO-BCOS regulated Zero-knowledge proof**: In FISCO BCOS, any zero-knowledge proof operation can be decrypted and regulated by the regulator. FISCO BCOS node is the verifier.
 
 ## 2. Underlying library
 
