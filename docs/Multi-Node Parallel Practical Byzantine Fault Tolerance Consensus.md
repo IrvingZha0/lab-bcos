@@ -19,13 +19,13 @@ Every node in the blockchain P2P network confirms a batch of transactions by an 
 ### Byzantine Fault Tolerant(BFT): 
 Byzantine fault tolerance comes from the Byzantine general problem. In a P2P network system, nodes may operate in any form, includes jointly to be evil. As long as the number of such faulty nodes is within a certain range and the system is still functioning properly, means the system has Byzantine fault tolerance.
 
-## 2. 传统共识算法介绍
-### 2.1传统技术方案
-现有区块链的共识算法主要包括工作量证明（POW）、权益证明（POS）、委托权益证明（DPOS）以及可用拜占庭容错算法（PBFT）等, 其中POW、POS、DPOS主要适用于比特币等公有链, 而PBFT是一种适用于传统分布式系统的拜占庭容错算法, 通过三轮广播通信完成共识算法.   
- ![](./images/consensus.jpg)
-### 2.2传统共识算法不足
-- POW通过算力竞争获得共识, 造成大量能源消耗, 而且这种算法会导致出块时间不稳定；
-- POS、DPOS需要通过代币数量来控制共识, 容易造成代币集中化, 使得共识被少数人控制, 少数人可以联合作恶破坏网络；
+## 2. Brief to existing consensus algorithm
+### 2.1 Existing consensus
+The existing consensus algorithms of blockchain mainly include Proof of Work(POW), Proof of Stake(POS), Delegated Proof of Stake(DPOS) and Practical Byzantine Fault Tolerance(PBFT). Among consensus algorithms, POW, POS, DPOS are mainly used for public chains like bitcoin, but PBFT is used for traditional distributed systems, which accomplishes the consensus algorithm through three rounds of broadcast communication.   
+ ![](./assets/pbft_consensus.jpg)
+### 2.2 Insufficient calculation of existing consensus
+- POW build consensus through computation, so it causing a lot of energy consumption also unstable block generating time.
+- POS、DPOS build consensus by using token, so it may easy to cause the tokens to be centralized, so that the consensus is controlled by a few people, and a few people can work together to destroy the network;
 - PBFT是一种可用的拜占庭容错算法, 但是由于该算法的三个阶段是串行执行, 存在共识效率低的问题. 
 
 ## 3. 应用于区块链的多节点并行拜占庭容错共识算法
@@ -37,7 +37,7 @@ Byzantine fault tolerance comes from the Byzantine general problem. In a P2P net
 在本算法中, 节点的角色不是固定不变的, 随着时间迁移节点角色也会进行变迁. 
 区块链网络由一个个节点组成, 假设一共有N个节点, 对节点从0,1,2...N-1进行编号, 每个节点对应一个唯一的Idx(i). 一个节点的角色判断通过公式 （h+v）%N 来决定, 其中h是区块链当前块高度, v是当前视图（视图的定义在3.4节会详细阐述）.   
 角色变迁图如下所示:   
- ![](./images/role.png)
+ ![](./assets/pbft_role.png)
 ### 3.3 共识过程
 共识过程就是区块链网络对一批交易进行确认, 并达到全网一致的过程. 共识过程分为以下几个阶段:   
 1. 选举领导: 通过3.2描述的算法推选出一个领导, 有别于其他基于投票选举领导的算法, 在本专利中是通过共识计算选出合适的领导, 这种方式具有更高的效率.   
