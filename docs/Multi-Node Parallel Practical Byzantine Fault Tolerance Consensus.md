@@ -5,6 +5,7 @@
 ### Blockchain:   
 Blockchain is a growing list of records, called blocks, which are linked using cryptography. Each block contains current block data and a cryptographic hash of the previous block. There are two key concepts of blockchain: cryptography and decentralization. Based on there two key concepts, the block data can not be tampered. 
 A block contains block head and block body. The block head contains the block height(h), previous block hash(prevHash) and etc, and the block body mainly contains transaction data.
+<br>
 ![](./assets/pbft_blockchain.jpg)  
 ### P2P(peer-to-peer) network: 
 Unlike traditional centralized networks, P2P networks is that participants make up a network through P2P protocols, and participants are peers. P2P network has the following advantages:
