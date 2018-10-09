@@ -2,19 +2,19 @@
 **Author: fisco-dev**  
 ## Introduction
 AMOP (Advance Messages Onchain Protocol) aims to provide a safe and efficient message channel. In consortium chain, all nodes, no matter consensus node or observation node, can use AMOP as the message channel with the following advantages:
-- Real-time: AMOP messages do not rely on transactions and consensus. Messages are transmitted between nodes with a milliseconds delay.  
-- Reliable: When the message is transmitted by AMOP, it will leverage any feasible routes in the blockchain network, and the message is guaranteed to be reachable as long as at least one route is available between sender and receiver node.
-- Efficient: AMOP protocal is concise and clean. It takes very minimized CPU and network bandwidth.
-- Security: Supports SSL encryption on network and the encryption algorithm can be configured.
+- Real-time: AMOP messages do not rely on transactions and consensus. Messages are transmitted nearly real-time with only a few milliseconds delay between nodes.  
+- Reliable: When the message is transmitted by AMOP, it will leverage any feasible routes in the blockchain network.The message is guaranteed to be reachable as long as at least one route is available between sender and receiver node.
+- Efficient: AMOP protocol is concise and clean. It takes very minimized CPU and network bandwidth.
+- Secure: Supports SSL encryption on the network and the encryption algorithm is configurable.
 - Easy to use: AMOP is embedded in the SDK.
 
 ## Network Architecture
 ![](./assets/amop_en.png)  
 Take the classic IDC (Internet Data Center) bank architecture as an example:  
-- SF (Server Farm) area: Applications within the organization intranet can leverage the SDK to send AMOP messages to the proxy. If no DMZ, link to blockchain node directly.
-- DMZ (Demilitarized Zone) area: physical or logical isolated network. This area is optional but recommended for better security. 
+- SF (Server Farm) area: Applications within the organization's intranet can leverage the SDK to send AMOP messages to the proxy. If there is no DMZ, applications will link to blockchain nodes directly.
+- DMZ (Demilitarized Zone) area: Physical or logical isolated network. This area is optional but recommended for better security.
 - Blockchain P2P network: The logical area which contains blockchain nodes from different organizations. This is usually deployed within the DMZ zone but can also be placed in the SF area.
-- Proxy Server: Responsible for forwarding messages from internal applicatoins to the blokchain P2P network. It is recommended to put the proxy inside DMZ
+- Proxy Server: Responsible for forwarding messages from internal applications to the blockchain P2P network. It is recommended to place the proxy inside DMZ.
 
 ## Configuration
 Below is a sample code for sending AMOP messages (Spring Bean):
@@ -63,7 +63,7 @@ Below is a sample code for sending AMOP messages (Spring Bean):
 </bean>
 ```
 
-If DMZ is used, the below is required for the proxy server:
+If DMZ is used, the below is require to configured for the proxy server:
 ```xml
 
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -101,9 +101,9 @@ If DMZ is used, the below is required for the proxy server:
 ```
 
 ## How to use SDK
-The sending and receiving is based on publish-subscribe pattern. The server creates the topic and subscribes to it. Clients connect to the topic and can send message to the server.
+The sending and receiving is based on publish-subscribe pattern. The server creates the topic and subscribes to it. Clients connect to the topic to send message to the server.
 
-Multiple topics are supported in a block chain. There is no limitation for the number of servers and clients. If multiple servers are subscribing to the same topic, only the first available server will receive the message.
+Multiple topics are supported in a blockchain. There is no limitation for the number of servers and clients. If multiple servers are subscribing to the same topic, only the first available server will receive the message.
 
 Server-side example:
 
@@ -241,7 +241,7 @@ public class Channel2Client {
 ```
 
 ## Running the test app locally
-After creating the above configurations, you can start the AMPO server and client with the below command lines:
+After creating the above configurations, you can start the AMOP server and client with the below command lines:
 
 Start AMOP server:
 
@@ -257,5 +257,5 @@ java -cp 'conf/:apps/*:lib/*' cn.webank.channel.test.Channel2Client [topic name]
 
 ## Error Code
 
-- 99: Message failed to deliver as there is no available route to the destination server. Suggest to check the node status with the sequence generated while sending and verify the route status.
+- 99: Message failed to deliver as there is no available route to the destination server. Check the node status with the sequence number(seq) generated while sending message as well as verify the route status.
 - 102: Connection Timeout. The server may be overloaded or not reachable.
