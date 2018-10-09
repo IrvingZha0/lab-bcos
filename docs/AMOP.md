@@ -11,12 +11,10 @@ AMOP (Advance Messages Onchain Protocol) aims to provide a safe and efficient me
 ## Network Architecture
 ![](./assets/amop_en.png)  
 Take the classic IDC (Internet Data Center) bank architecture as an example:  
-- SF (Server Farm) area: Applications within the organization intranet can leverage the SDK to send AMOP messages to the gateway
-- 
-- An internal business service area. Application in SF can use SDK to transfer message by AMOP. Setup SDK to link to the blockchain proxy in DMZ. If no DMZ, link to blockchain node directly.
+- SF (Server Farm) area: Applications within the organization intranet can leverage the SDK to send AMOP messages to the proxy. If no DMZ, link to blockchain node directly.
 - DMZ (Demilitarized Zone) area: physical or logical isolated network. This area is optional but recommended for better security. 
-- Proxy Server: Responsible for forwarding messages from internal applicatoins to the blokchain P2P network. It is recommended to put the gateway inside DMZ
 - Blockchain P2P network: The logical area which contains blockchain nodes from different organizations. This is usually deployed within the DMZ zone but can also be placed in the SF area.
+- Proxy Server: Responsible for forwarding messages from internal applicatoins to the blokchain P2P network. It is recommended to put the proxy inside DMZ
 
 ## Configuration
 Below is a sample code for sending AMOP messages (Spring Bean):
@@ -24,44 +22,44 @@ Below is a sample code for sending AMOP messages (Spring Bean):
 
 <?xml version="1.0" encoding="UTF-8" ?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans   
-	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
-			http://www.springframework.org/schema/tx   
-	http://www.springframework.org/schema/tx/spring-tx-2.5.xsd  
-			http://www.springframework.org/schema/aop   
-	http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
-	
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans   
+    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
+    http://www.springframework.org/schema/tx   
+    http://www.springframework.org/schema/tx/spring-tx-2.5.xsd  
+            http://www.springframework.org/schema/aop   
+    http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+    
 <!-- Thread pool configuration, config as needs -->
 <bean id="pool" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-	<property name="corePoolSize" value="50" />
-	<property name="maxPoolSize" value="100" />
-	<property name="queueCapacity" value="500" />
-	<property name="keepAliveSeconds" value="60" />
-	<property name="rejectedExecutionHandler">
-		<bean class="java.util.concurrent.ThreadPoolExecutor.AbortPolicy" />
-	</property>
+    <property name="corePoolSize" value="50" />
+    <property name="maxPoolSize" value="100" />
+    <property name="queueCapacity" value="500" />
+    <property name="keepAliveSeconds" value="60" />
+    <property name="rejectedExecutionHandler">
+        <bean class="java.util.concurrent.ThreadPoolExecutor.AbortPolicy" />
+    </property>
 </bean>
 
 <!-- Blockchain nodes configuration -->
 <bean id="channelService" class="cn.webank.channel.client.Service">
-	<property name="orgID" value="WB" /> <!-- Configure the organization's name -->
-		<property name="allChannelConnections">
-			<map>
-				<entry key="WB"> <!-- Setup SDK to link to the blockchain proxy in DMZ. If no DMZ, link to blockchain node directly.-->
-					<bean class="cn.webank.channel.handler.ChannelConnections">
-						<property name="connectionsStr">
-							<list>
+    <property name="orgID" value="WB" /> <!-- Configure the organization's name -->
+        <property name="allChannelConnections">
+            <map>
+                <entry key="WB"> <!-- Setup SDK to link to the blockchain proxy in DMZ. If no DMZ, link to blockchain node directly.-->
+                    <bean class="cn.webank.channel.handler.ChannelConnections">
+                        <property name="connectionsStr">
+                            <list>
                                 <value>NodeA@127.0.0.1:30333</value><!-- Format: Node name @ IP address: Port Node name can be any -->
-							</list>
-						</property>
-					</bean>
-				</entry>
-			</map>
-		</property>
-	</bean>
+                            </list>
+                        </property>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
 </bean>
 ```
 
@@ -70,35 +68,35 @@ If DMZ is used, the below is required for the proxy server:
 
 <?xml version="1.0" encoding="UTF-8" ?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans   
-	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
-			http://www.springframework.org/schema/tx   
-	http://www.springframework.org/schema/tx/spring-tx-2.5.xsd  
-			http://www.springframework.org/schema/aop   
-	http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
-	
-	<!-- Blockchain nodes configuration -->
-	<bean id="proxyServer" class="cn.webank.channel.proxy.Server">
-		<property name="remoteConnections">
-			<bean class="cn.webank.channel.handler.ChannelConnections">
-				<property name="connectionsStr">
-					<list>
-						<value>NodeA@127.0.0.1:5051</value><!-- Format: Node name @ IP address: Port Node name can be any -->
-					</list>
-				</property>
-			</bean>
-		</property>
-		
-		<property name="localConnections">
-			<bean class="cn.webank.channel.handler.ChannelConnections">
-			</bean>
-		</property>
-		<!-- Proxy listening port config for SDK connection -->
-		<property name="bindPort" value="30333"/>
-	</bean>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans   
+    http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  
+            http://www.springframework.org/schema/tx   
+    http://www.springframework.org/schema/tx/spring-tx-2.5.xsd  
+            http://www.springframework.org/schema/aop   
+    http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+    
+    <!-- Blockchain nodes configuration -->
+    <bean id="proxyServer" class="cn.webank.channel.proxy.Server">
+        <property name="remoteConnections">
+            <bean class="cn.webank.channel.handler.ChannelConnections">
+                <property name="connectionsStr">
+                    <list>
+                        <value>NodeA@127.0.0.1:5051</value><!-- Format: Node name @ IP address: Port Node name can be any -->
+                    </list>
+                </property>
+            </bean>
+        </property>
+        
+        <property name="localConnections">
+            <bean class="cn.webank.channel.handler.ChannelConnections">
+            </bean>
+        </property>
+        <!-- Proxy listening port config for SDK connection -->
+        <property name="bindPort" value="30333"/>
+    </bean>
 </beans>
 ```
 
@@ -124,31 +122,31 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import cn.webank.channel.client.Service;
 
 public class Channel2Server {
-	static Logger logger = LoggerFactory.getLogger(Channel2Server.class);
-	
-	public static void main(String[] args) throws Exception {
-		if(args.length < 1) {
-			System.out.println("Parameters: Receive topic");
-			return;
-		}
-		
-		String topic = args[0];
+    static Logger logger = LoggerFactory.getLogger(Channel2Server.class);
+    
+    public static void main(String[] args) throws Exception {
+        if(args.length < 1) {
+            System.out.println("Parameters: Receive topic");
+            return;
+        }
+        
+        String topic = args[0];
 
-		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-		Service service = context.getBean(Service.class);
-		
-		//config topic, support multiple topic
-		List<String> topics = new ArrayList<String>();
-		topics.add(topic);
-		service.setTopics(topics);
-		
-		//handle PushCallback class, see Callback code
-		PushCallback cb = new PushCallback();
-		service.setPushCallback(cb);
-		
-		//run server
-		service.run();
-	}
+        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+        Service service = context.getBean(Service.class);
+        
+        //config topic, support multiple topic
+        List<String> topics = new ArrayList<String>();
+        topics.add(topic);
+        service.setTopics(topics);
+        
+        //handle PushCallback class, see Callback code
+        PushCallback cb = new PushCallback();
+        service.setPushCallback(cb);
+        
+        //run server
+        service.run();
+    }
 }
 ```
 Server-side PushCallback example:
@@ -168,23 +166,23 @@ import cn.webank.channel.dto.ChannelPush;
 import cn.webank.channel.dto.ChannelResponse;
 
 class PushCallback extends ChannelPushCallback {
-	static Logger logger = LoggerFactory.getLogger(PushCallback2.class);
-	
-	//onPush function, Called when the AMOP message is received
-	@Override
-	public void onPush(ChannelPush push) {
-		DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		logger.debug("Received PUSH message:" + push.getContent());
-		
-		System.out.println(df.format(LocalDateTime.now()) + "server:Received PUSH message:" + push.getContent());
-		
-		//Response
-		ChannelResponse response = new ChannelResponse();
-		response.setContent("receive request seq:" + String.valueOf(push.getMessageID()));
-		response.setErrorCode(0);
-		
-		push.sendResponse(response);
-	}
+    static Logger logger = LoggerFactory.getLogger(PushCallback2.class);
+    
+    //onPush function, Called when the AMOP message is received
+    @Override
+    public void onPush(ChannelPush push) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        logger.debug("Received PUSH message:" + push.getContent());
+        
+        System.out.println(df.format(LocalDateTime.now()) + "server:Received PUSH message:" + push.getContent());
+        
+        //Response
+        ChannelResponse response = new ChannelResponse();
+        response.setContent("receive request seq:" + String.valueOf(push.getMessageID()));
+        response.setErrorCode(0);
+        
+        push.sendResponse(response);
+    }
 }
 ```
 
@@ -209,36 +207,36 @@ import cn.webank.channel.dto.ChannelRequest;
 import cn.webank.channel.dto.ChannelResponse;
 
 public class Channel2Client {
-	static Logger logger = LoggerFactory.getLogger(Channel2Client.class);
-	
-	public static void main(String[] args) throws Exception {
-		if(args.length < 1) {
-			System.out.println("Parameters: target topic");
-			return;
-		}
-		
-		String topic = args[0];
-		
-		DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    static Logger logger = LoggerFactory.getLogger(Channel2Client.class);
+    
+    public static void main(String[] args) throws Exception {
+        if(args.length < 1) {
+            System.out.println("Parameters: target topic");
+            return;
+        }
+        
+        String topic = args[0];
+        
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
 
-		Service service = context.getBean(Service.class);
-		service.run();
-		
-		Thread.sleep(2000); //It takes a little time to set up the connection, and if the message is sent immediately, it will fail
+        Service service = context.getBean(Service.class);
+        service.run();
+        
+        Thread.sleep(2000); //It takes a little time to set up the connection, and if the message is sent immediately, it will fail
 
-		ChannelRequest request = new ChannelRequest();
-		request.setToTopic(topic); //Set message's topic
-		request.setMessageID(service.newSeq()); //Message sequence number that uniquely identifies a message, use newSeq() random generate
-		request.setTimeout(5000); //Timeout of message
-			
-		request.setContent("request seq:" + request.getMessageID()); //Message content
-			
-		ChannelResponse response = service.sendChannelMessage2(request); //Send message
-			
-		System.out.println(df.format(LocalDateTime.now()) + "Received response seq:" + String.valueOf(response.getMessageID()) + ", Error code:" + response.getErrorCode() + ", message content:" + response.getContent());
-	}
+        ChannelRequest request = new ChannelRequest();
+        request.setToTopic(topic); //Set message's topic
+        request.setMessageID(service.newSeq()); //Message sequence number that uniquely identifies a message, use newSeq() random generate
+        request.setTimeout(5000); //Timeout of message
+            
+        request.setContent("request seq:" + request.getMessageID()); //Message content
+            
+        ChannelResponse response = service.sendChannelMessage2(request); //Send message
+            
+        System.out.println(df.format(LocalDateTime.now()) + "Received response seq:" + String.valueOf(response.getMessageID()) + ", Error code:" + response.getErrorCode() + ", message content:" + response.getContent());
+    }
 }
 ```
 
