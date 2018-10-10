@@ -2,7 +2,7 @@
 **Author: fisco-dev**   
 ## Design Overview ##
 
-There are many distributed nodes in a block chain.To make sure the configuration is sync on all nodes, a mechanism had been built in FISCO BCOS with smart contract to sync up the configuration cross all nodes:
+There are many distributed nodes in a block chain. To make sure the configuration is sync on all nodes, a mechanism had been built in FISCO BCOS with smart contract to sync up the configuration cross all nodes:
 
 ![reference](./assets/sys_para.png)
 
@@ -57,7 +57,7 @@ Value: true/false
 Default: false
 
 ### omitEmptyBlock ###
-Description: skip empty blocks(will not store the block when there is no transaction)
+Description: skip empty blocks (will not store the block when there is no transaction)
 
 Value: true/false
 
