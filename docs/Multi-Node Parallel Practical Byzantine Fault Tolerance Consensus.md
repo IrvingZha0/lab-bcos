@@ -22,7 +22,8 @@ Byzantine fault tolerance comes from the Byzantine general problem. In a P2P net
 
 ## 2. Brief to existing consensus algorithm
 ### 2.1 Existing consensus
-The existing consensus algorithms of blockchain mainly include Proof of Work(POW), Proof of Stake(POS), Delegated Proof of Stake(DPOS) and Practical Byzantine Fault Tolerance(PBFT). Among consensus algorithms, POW, POS, DPOS are mainly used for public chains like bitcoin, but PBFT is used for traditional distributed systems, which accomplishes the consensus algorithm through three rounds of broadcast communication.   
+The existing consensus algorithms of blockchain mainly include Proof of Work(POW), Proof of Stake(POS), Delegated Proof of Stake(DPOS) and Practical Byzantine Fault Tolerance(PBFT). Among consensus algorithms, POW, POS, DPOS are mainly used for public chains like bitcoin, but PBFT is used for traditional distributed systems, which accomplishes the consensus algorithm through three rounds of broadcast communication.
+<br>
  ![](./assets/pbft_consensus.jpg)
 ### 2.2 Insufficient calculation of existing consensus algorithm
 - POW build consensus through computation, so it is causing a lot of energy consumption also unstable block generating time.
@@ -36,6 +37,7 @@ The existing consensus algorithms of blockchain mainly include Proof of Work(POW
 ### 3.2 Node's role transition
 In PBFT, node's role is changed as time going.
 As we known that blockchain build up by nodes, assume that there are N nodes totally, and each node has a unique index: Idx(i). and node's role is decided by a formula: (h+v)%N. h is the current block height, v is the current view(more information about view in section  [3.4 Exception handling](#exception-handling)).
+<br>
  ![](./assets/pbft_role.png)
 ### 3.3 Consensus decision-making
 
@@ -54,7 +56,9 @@ A view is one consensus decision-making process life circle. and next view needs
 
 When a node completes store block h to disk, it needs to start the consensus process of block h+1. At this time, a timer will be set for consensus process of block h+1. If the consensus process is not completed before timeout, it will execute the view-change process.
 The process of view-change is firstly executing v++, and then broadcast v to all nodes. If more than 2/3 nodes receive the request of view v view-change, then switch to the next view.
+<br>
 ![](./assets/pbft_error.png)   
 ### 3.5 Parallel computing
 In the consensus process (introduced in section 3.3), the processes of leader node package transaction and follower node verify transaction are the most time-consuming part of the entire consensus process, and these two processes are serial computing. It is assumed that the transaction confirmation time is T, and the total process consumption time is T', so the time spent on the whole consensus is 2*T+T'. FISCO BCOS patent consensus algorithm improves the process like below, so the time spent on the whole consensus reduced to T+T'.
+<br>
 ![](./assets/pbft_parallel.png)
