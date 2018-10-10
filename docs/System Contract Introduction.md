@@ -1,5 +1,5 @@
 # FISCO BCOS System Contract Introduction
-**Author:fisco-dev**  
+**Author: fisco-dev**  
 
 <!-- TOC -->
 
@@ -19,7 +19,7 @@
 
 ## Design Overview
 
-To meet the requirements of access control, identity authentication, configuration management, permissions management and etc., the system contracts, which is a set of powerful, flexible and extendable smart contracts, will be deployed when initial the network.
+To meet the requirements of access control, identity authentication, configuration management, permissions management etc., the system contracts, which is a set of powerful, flexible and extendable smart contracts, will be deployed when initial the network.
 
 The system contract is deployed by admin during initialization. All nodes' agreement is necessary for post-init upgrade.
 
@@ -29,7 +29,7 @@ FISCO BCOS system contract is composite of five modules: System Proxy, Node Mana
 
 ## How it works
 
-Code path: systemcontractv2/. Brief each modules as below:
+Code path: systemcontractv2/. Brief each module as below:
 
 ### System Proxy
 
@@ -126,7 +126,7 @@ Permissions management's design principles: 1, One external account only belongs
 
 Permission module are composite of 4 contracts: [TransactionFilterChain.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/TransactionFilterChain.sol), [TransactionFilterBase.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/TransactionFilterBase.sol), [AuthorityFilter.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/AuthorityFilter.sol), [Group.sol](https://github.com/FISCO-BCOS/FISCO-BCOS/blob/master/systemcontract/Group.sol).
 
-TransactionFilterChain.sol, the implementation of Filter pattern, provides an unified function - process - for permission checking. It holds an address list of Filter contract extends from TransactionFilterBase. All permissions will be checked by calling process function of each Filter contract in sequence.
+TransactionFilterChain.sol, the implementation of Filter pattern, provides a unified function - process - for permission checking. It holds an address list of Filter contract extends from TransactionFilterBase. All permissions will be checked by calling process function of each Filter contract in sequence.
 
 A process method is mandatory for each filter which is extend from its base contract - TransactionFilterBase.sol
 AuthorityFilter, inheriting TransactionFilterBase, checks user group's permission.

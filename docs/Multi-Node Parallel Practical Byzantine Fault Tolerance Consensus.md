@@ -18,7 +18,7 @@ In a P2P network, every participant is a node and the nodes constitute the block
 ### Consensus algorithm: 
 Every node in the blockchain P2P network confirms a batch of transactions by an algorithm and ensures that all nodes have consistent confirmation results for the batch of transactions. This algorithm is a blockchain consensus.
 ### Byzantine Fault Tolerant(BFT): 
-Byzantine fault tolerance comes from the Byzantine general problem. In a P2P network system, nodes may operate in any form, includes jointly to be evil. As long as the number of such faulty nodes is within a certain range and the system is still functioning properly, means the system has Byzantine fault tolerance.
+Byzantine fault tolerance comes from the Byzantine general problem. In a P2P network system, there is no rules for nodes, even nodes can jointly to be evil. As long as the number of such faulty nodes is within a certain range and the system is still functioning properly, means the system has Byzantine fault tolerance.
 
 ## 2. Brief to existing consensus algorithm
 ### 2.1 Existing consensus
@@ -48,10 +48,13 @@ Consensus decision-making is a group decision-making process, and agree to suppo
 <br>
  ![](./assets/pbft_process.png) 
 ###  3.4 Exception handling
-在3.3的描述的共识过程几个阶段, 每个阶段都有可能因为出现错误、超时或者故意作恶等各种原因致使无法顺利进入下一个阶段, 从而使共识无法达成. 本专利引入异常处理机制解决这种问题.   
-把一次共识共识的全过程定义为一个视图, 所有阶段需要在同一个视图下完成.   
-当一个节点完成块h的落盘存储之后, 意味着它就需要开始块h+1的共识过程, 此时会对块h+1的共识设置一个超时器, 当到达超时还未完成共识过程就会引起视图切换过程. 视图切换的过程首先是将自己的视图v++, 然后把v全网广播告知所有节点, 如果收到2/3以上节点都有相同的视图v切换请求, 就顺利切换到下一个视图.   
+In the several stages of the consensus decision-making process described in section 3.3, each stage may be unable to work smoothly due to some reasons such as error, timeout or deliberate evil, thus the consensus decision-making process is failed. FISCO BCOS patent algorithm introduces an exception handling to solve this problem.
+A view is one consensus decision-making process life circle. and next view needs to be executed after the current view complete.
+A view is one consensus decision-making process life circle. and next view needs to be executed after the current view finished.
+
+When a node completes store block h to disk, it needs to start the consensus process of block h+1. At this time, a timer will be set for consensus process of block h+1. If the consensus process is not completed before timeout, it will execute the view-change process.
+The process of view-change is firstly execute v++, and then broadcast v to all nodes. If more than 2/3 nodes receive the request of view v view-change, then switch to the next view.
 ![](./assets/pbft_error.png)   
-### 3.5 并行机制
+### 3.5 Parallel computing
 在3.3介绍的共识过程中, 打包验证交易和验证交易分别是领导节点和随从节点对交易进行确认的操作, 这是整个共识过程中最耗时的环节. 从图中可以看出, 打包验证交易和验证交易是串行执行的, 首先要由领导节点完成打包验证交易, 随从节点的验证交易才能开始进行, 假设交易确认耗时为T, 其他过程总耗时为T’, 那么整个共识的耗时就为2*T+T’. 本专利对交易确认机制提出并行化的改进设计, 整体共识耗时降为T+T’, 大大提高了共识效率.   
-![](./assets/pbft_parallel.png)  
+![](./assets/pbft_parallel.png)

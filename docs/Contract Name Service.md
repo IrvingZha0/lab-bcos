@@ -97,7 +97,7 @@ Below diagram shows the process and its advantages:
 
 ![](./assets/en_cns_2.png)
 
-The client calls the contract service by RPC, first it will visit contract naming service to get underlying business contract details(ABI and address), then constructing a call to business smart contract by its ABI and address, and finally return the results to the client.
+The client calls the contract service by RPC, first it will visit contract naming service to get underlying business contract details (ABI and address), then constructing a call to business smart contract by its ABI and address, and finally return the results to the client.
 
 ### 2. Key components
 
@@ -239,7 +239,7 @@ cns_manager.js  ........................Begin........................
 
 Modify RPC to support CNS call:
 > Only wrap the RPC interface so it is still compatible to original Ethereum call.
-> RPC format details:https://github.com/ethereum/wiki/wiki/JSON-RPC  
+> RPC format details: https://github.com/ethereum/wiki/wiki/JSON-RPC  
 
 - eth_call  
 ```json  
@@ -318,7 +318,7 @@ response:
         ]
       }
 ```
-#### d. Javascript RPC call
+#### d. JavaScript RPC call
 Path: web3lib/web3sync.js  
 Interface:
 ```
@@ -352,7 +352,7 @@ contract HelloWorld{
 1. Call 'cns_manager add' again if a customized name is needed.
 2. Leave it for test contract.
 3. Call 'cns_manager update' for bug fixing or upgrade.
-4. Modify the contract's version if previous contrac is still needed (refer to multi-version deployment).
+4. Modify the contract's version if previous contract is still needed (refer to multi-version deployment).
 
 ```javascript
     //examples of success
@@ -516,7 +516,7 @@ curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_call","params":[{"data":{"c
 'call defaut version' in repsonse shows it is the latest contract.
 ```
 
-- Call by Javascript   
+- Call by JavaScript   
 
 ```javascript
 //Call HelloWorld get
@@ -791,7 +791,7 @@ public static XX loadByName(String contractName, Web3j web3j, TransactionManager
 The value format of contractName input parameter is: contractName@version, version is optional.
 
 5. Summary
-a. Use Javascript tool to deploy contracts. 
+a. Use JavaScript tool to deploy contracts. 
 b. Use cns_nameger.js tool to register contract to contract manager.  
 c. Use websdk tool to generate the Java wrapper. 
 d. Add Java wrapper to project and create contract by loadByName.
