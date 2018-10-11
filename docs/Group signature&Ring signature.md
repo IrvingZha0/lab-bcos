@@ -128,7 +128,7 @@ cmake -DGROUPSIG=ON -DEVMJIT=OFF -DTESTS=OFF -DMINIUPNPC=OFF ..
 **(3) Compile and start fisco bcos**
 
 ```bash
-#编译fisco-bcos
+# compile fisco-bcos
 make -j4 #注: 这里j4表明用4线程并发编译，可根据机器CPU配置调整并发线程数
 #运行fisco-bcos: 替换节点启动的可执行文件，重启节点:
 bash start.sh

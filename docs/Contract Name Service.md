@@ -2,19 +2,16 @@
 
 ## Overview
 
-When business layer invokes a contract, it needs to know the address like '0x92535066cd4b022c7e84b058d8bbbf71e22c3c78'. However, if we need to upgrade the contract, the address will change and every contract referencing this address needs to be updated. CNS solves this by allowing us to create alias to the address.
+When business layer invokes a contract, it needs to know the address like '0x92535066cd4b022c7e84b058d8bbbf71e22c3c78'. However, if we need to upgrade the contract, the address will change and every contract referencing this address needs to be updated. CNS solves this by allowing us to create alias (contractName) to the address.
 
 ### ABI / Contract Address
 ABI and contract address are mandatory when we trigger the smart contract. Below are some disadvantages of using the ABI and contract address directly.
 
 1. The ABI is a long JSON string, not user-friendly.
 2. Contract address is a magic number which is hard to remember and can easily typed wrong. 
-3. The contracts will be unreachable if the address had been forgotten.
+3. The contract will be unreachable if the address had been forgotten.
 4. The contract address is changed after deployment.
-5. Difficult to handle version management and contract gated-upgrade.
-
-The CNS holds a mapping from contract name to ABI and address.
-For invoking the contract via CNS, we will need to pass the contract name, version, function name and associated parameters. The CNS Manager module will translate it to the exact ABI and address for binary execution in EVM.
+5. It is difficult to manage versioning and contract gated-upgrade.
 
 With the CNS in place, we see the following advantages as a caller:
 1. No longer need to maintain the ABI and contract address.
@@ -34,7 +31,7 @@ TODO: Add a sequence diagram showing #1, #2, #3 #4 steps
 
 1. Client calls the Contract Manager and pass contract name, version (optional), function name and associated parameters
 2. Contract Manager gets the ABI and address with the contract name and version
-3. Contract Manager triggers the function in the contract (ABI and address we got from #2) with the associated parameters it got from #1
+3. Contract Manager triggers the function in the contract (ABI and address we got from #2) with the associated parameters it got from #1 within EVM
 4. It returns the result to the client
 
 ### 2. Key components
@@ -270,6 +267,10 @@ sendRawTransactionByNameService
 
 ## Examples
 
+### Creating, updating and resetting an entry in the CNS Manager
+
+TODO： Combine with the bottom code
+
 ```solidity
 // Test contract
 // Path tool/HelloWorld.sol
@@ -474,7 +475,7 @@ var result = web3sync.sendRawTransactionByNameService(config.account,config.priv
 var result = web3sync.sendRawTransactionByNameService(config.account,config.privKey,"HelloWorld","set","v-1.0",["test message!"]); 
 ```
 
-## Appendix One: Function overload   
+### Function overload   
 Solidity supports function overload. The value format of input 'func' parameter is different to original when calling overloaded function:
 
 ```solidity
@@ -555,7 +556,7 @@ jsCall set(uint256 _i)):
 var result = web3sync.sendRawTransactionByNameService(config.account,config.privKey,"OverloadTest","set(uint256)","",["0x111"]);
 ```
 
-## Appendix two: RPC called by Java  
+### RPC called by Java  
 
 Take HelloWorld.sol contract as an example:
 
