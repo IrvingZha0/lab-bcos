@@ -1,4 +1,4 @@
-# Multi-Node Parallel Practical Byzantine Fault Tolerance Consensus Algorithm
+# Parallel Practical Byzantine Fault Tolerance Consensus Algorithm
 **Author: fisco-dev**  
 
 ## 1. Glossary
@@ -30,7 +30,7 @@ The existing consensus algorithms of blockchain mainly include Proof of Work(POW
 - POS、DPOS build consensus by using token, so it may easy to cause the tokens to be centralized, so that the consensus is controlled by a few people, and a few people can work together to destroy the network;
 - PBFT algorithm's three phases are serial computing so consensus efficiency is low.
 
-## 3. Multi-Node Parallel Practical Byzantine Fault Tolerance Consensus Algorithm
+## 3. Parallel Practical Byzantine Fault Tolerance Consensus Algorithm
 ### 3.1 Node Roles
 - Leader node: Leader packages and broadcasts the block to other nodes. Transactions in the block are verified by consensus algorithm and after verification the block height will increase.
 - Follower node: Followers receive block from the leader node and confirm whether the transaction is valid, followers will sign the signature to the block when the nodes agree on a block., then the consensus process is done.
