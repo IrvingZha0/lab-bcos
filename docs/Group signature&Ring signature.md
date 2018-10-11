@@ -25,7 +25,7 @@
 
 - **Case 1**： Members (Consumer user) or subordinates organization in the organization on behalf of the organization put group signature information to the blockchain. When verifiers want to verify the group signature, they can only know which group the signature belongs but cannot know who is the signer. So group signature can keep signer anonymity and make sure the signature cannot be modified.
 Group signature can be used for auctions, anonymous deposits and credit reports etc.
-- **Case 2**：The business user sends the generated group signature to the consortium chain organization (such as webank) through AMOP, and the organization unified put the collected group signature information (such as bidding, reconciliation, etc.) to the blockchain. When verifiers want to verify the group signature, they cannot know who is the signer thus to keep signer anonymity. But the regulator can track the signer information through trusted third parties to ensure the traceability of the signature.
+- **Case 2**：The business user sends the generated group signature to the consortium blockchain organization (such as webank) through AMOP, and the organization unified put the collected group signature information (such as bidding, reconciliation, etc.) to the blockchain. When verifiers want to verify the group signature, they cannot know who is the signer thus to keep signer anonymity. But the regulator can track the signer information through trusted third parties to ensure the traceability of the signature.
 
 <br>
 
@@ -109,11 +109,12 @@ sudo bash deploy_pbc.sh
 ```
 <br>
 
-**(2) enable ethcall for group/ring signature**
+**(2) Enable/disable ethcall for group/ring signature**
 
 
 FISCO BCOS group/ring signature use -DGROUPSIG=ON or -DGROUPSIG=OFF to control whether need compile, by default -DGROUPSIG=OFF.
 
+Enable:
 ```bash
 # create build file for store the compiled file
 cd FISCO-BCOS && mkdir -p build && cd build
@@ -123,6 +124,17 @@ cmake3 -DGROUPSIG=ON -DEVMJIT=OFF -DTESTS=OFF -DMINIUPNPC=OFF ..
 #**ubuntu OS:
 cmake -DGROUPSIG=ON -DEVMJIT=OFF -DTESTS=OFF -DMINIUPNPC=OFF ..
 ```
+Disable:
+```bash
+# create build file for store the compiled file
+cd FISCO-BCOS && mkdir -p build && rm -rf build/* && cd build
+# disable group/ring signature when cmake create Makefile
+#centos OS：
+cmake3 -DGROUPSIG=OFF -DEVMJIT=OFF -DTESTS=OFF -DMINIUPNPC=OFF ..
+#ubuntu OS：
+cmake -DGROUPSIG=OFF -DEVMJIT=OFF -DTESTS=OFF -DMINIUPNPC=OFF ..
+```
+<br>
 
 <br>
 
@@ -130,100 +142,63 @@ cmake -DGROUPSIG=ON -DEVMJIT=OFF -DTESTS=OFF -DMINIUPNPC=OFF ..
 
 ```bash
 # compile fisco-bcos
-make -j4 #注: 这里j4表明用4线程并发编译，可根据机器CPU配置调整并发线程数
-#运行fisco-bcos: 替换节点启动的可执行文件，重启节点:
+make -j4 #Note: j4 stand for use 4 threads complicating compile, can be configured as needs.
+# start fisco-bcos:
 bash start.sh
 ```
 
 <br>
 
 
-### 2.2 Disable Group signature & Ring signature ethcall
+## 2 Other dependencies
 
-**(1) 关闭群签名&&环签名ethcall编译开关**
+**(1) Client： [sig-service-client](https://github.com/FISCO-BCOS/sig-service-client)**
 
+sig-service-client provide below features：
 
-编译fisco bcos时，将cmake的-DGROUPSIG编译选项设置为OFF可关闭群签名&&环签名ethcall功能：
+- Access [sig-service)](https://github.com/FISCO-BCOS/sig-service) rpc interface.
+- Put signature on the blockchain(make transaction)
 
-```bash
-#新建build文件用于存储编译文件
-cd FISCO-BCOS && mkdir -p build && rm -rf build/* && cd build
-#关闭群签名&&环签名ethcall开关
-#centos系统：
-cmake3 -DGROUPSIG=OFF -DEVMJIT=OFF -DTESTS=OFF -DMINIUPNPC=OFF ..
-#ubuntu系统：
-cmake -DGROUPSIG=OFF -DEVMJIT=OFF -DTESTS=OFF -DMINIUPNPC=OFF ..
-```
-<br>
-
-**(2) 编译并运行fisco bcos**
-
-```bash
-#编译fisco-bcos
-make -j4 #注: 这里j4表明用4线程并发编译，可根据机器CPU配置调整并发线程数
-#运行fisco-bcos: 替换节点启动的可执行文件，重启节点:
-bash start.sh
-```
+Detail usage and deployment[ Group signature & Ring signature client guidebook](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master/doc/manual).
 
 <br>
 
+**(2) group signature & ring signature service：[sig-service](https://github.com/FISCO-BCOS/sig-service)**
 
 
-## 3 Usage
+sig-service is deployed in the organization and provide below features for [sig-service-client](https://github.com/FISCO-BCOS/sig-service-client):
 
-在区块链上使用群签名&&环签名功能，还需要部署以下服务：
+- Create Group, add group member, generate group signature, verify group signature, track signer's identity.
+- Create Ring, generate ring signature, verify ring signature.
 
-**(1) 群签名&&环签名客户端： [sig-service-client](https://github.com/FISCO-BCOS/sig-service-client)**
+In FISCO BCOS, sig-service-client always request the group/ring signature first, then put the signature on the blockchain. Blockchain nodes verify the signature by invoking ethcall.
 
-sig-service-client客户端提供了以下功能：
-
-- 访问[群签名&&环签名服务](https://github.com/FISCO-BCOS/sig-service)rpc接口；
-- 将群签名&&环签名信息写入链上(发交易)
-
-具体使用和部署方法请参考[群签名&&环签名客户端操作手册](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master/doc/manual).
-
-<br>
-
-**(2) 群签名&&环签名服务：[sig-service](https://github.com/FISCO-BCOS/sig-service)**
-
-
-sig-service签名服务部署在机构内，为群签名&&环签名客户端([sig-service-client](https://github.com/FISCO-BCOS/sig-service-client))提供了如下功能：
-
-- 群生成、群成员加入、生成群签名、群签名验证、追踪签名者身份等rpc接口；
-- 环生成、生成环签名、环签名验证等rpc接口；
-
-在FISCO BCOS中，sig-service-client客户端一般先请求该签名服务生成群签名或环签名，然后将获取的签名信息写入到区块链节点；区块链节点调用群签名&&环签名ethcall验证签名的有效性。
-
-sig-service的使用和部署方法请参考[群签名&&环签名RPC服务操作手册](https://github.com/FISCO-BCOS/sig-service).
+sig-service's usage and deployment [group signature & ring signature RPC guidebook](https://github.com/FISCO-BCOS/sig-service).
 
 <br>
 
 
 
-## 4 Matters need attention 
+## 4 Note
 
-**(1) 群签名&& 环签名ethcall兼容老版本FISCO BCOS** 
-
-<br>
-
-(2) 启用群签名&&环签名ethcall，并调用相关功能后，**不能关闭该ethcall接口，否则验证区块时，群签名和环签名相关的数据无法找到验证接口，从而导致链异常退出**
-
-
-若操作者在开启并使用群签名&&环签名特性后，不小心关闭了该ethcall功能，可通过回滚fisco bcos到开启群签名&&环签名ethcall时的版本来使链恢复正常；
+**(1) Group signature & ring signature is backward compatible** 
 
 <br>
 
-**(3) 同一条链的fisco bcos版本必须相同**
+(2) After enable ethcall, **you cannot stop ethcall service，otherwise the interface is not reachable when doing the verification, and causing abnormally exit**
 
-
-即：若某个节点开启了群签名&&环签名验证功能，其他链必须也开启该功能，否则在同步链时，无群签名&&环签名ethcall实现的节点会异常退出；
+If ethcall is stopped by mistake, you can revert back FISCO BCOS to the original version, the version when you enable the ethcall, to bring blockchain back to works.
 
 <br>
 
-(4) 使用群签名&&环签名链上验证功能前，**必须先部署[群签名&&环签名服务](https://github.com/FISCO-BCOS/sig-service)和[群签名&&环签名客户端](https://github.com/FISCO-BCOS/sig-service-client)**
+**(3) The FISCO BCOS's version must be same on the same blockchain**
 
-[客户端sig-service-client](https://github.com/FISCO-BCOS/sig-service-client)向链上发签名信息，[群签名&&环签名服务](https://github.com/FISCO-BCOS/sig-service)为客户端提供签名生成服务
+If a node enabled group/ring signature verification service, then all the other nodes must enable as well. Otherwise the nodes which are not enabled verification service will abnormally exit.
+<br>
 
+(4) Before invoking group/ring signature verification service, ** you must deploy [group signature & ring signature RPC guidebook](https://github.com/FISCO-BCOS/sig-service) and [sig-service-client](https://github.com/FISCO-BCOS/sig-service-client)**
+
+[sig-service-client](https://github.com/FISCO-BCOS/sig-service-client) responsible for putting the signature on the blockchain，[group signature & ring signature RPC guidebook](https://github.com/FISCO-BCOS/sig-service) responsible for providing signature generating service
 <br>
 
  
