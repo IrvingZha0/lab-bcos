@@ -96,8 +96,8 @@ babel-node AuthorityManager.js Group disableBlack <filter's index> <user's accou
 babel-node AuthorityManager.js Group getDeployStatus <filter's index> <user's account>
 babel-node AuthorityManager.js Group enableDeploy <filter's index> <user's account>
 babel-node AuthorityManager.js Group disableDeploy <filter's index> <user's account>
-babel-node AuthorityManager.js Group addPermission <filter's index> <user's account> <contract address> <function name(parameters)>
-babel-node AuthorityManager.js Group delPermission <filter's index> <user's account> <contract address> <function name(parameters)>
+babel-node AuthorityManager.js Group addPermission <filter's index> <user's account> <contract address> <fun name(parameters)>
+babel-node AuthorityManager.js Group delPermission <filter's index> <user's account> <contract address> <fun name(parameters)>
 babel-node AuthorityManager.js Group checkPermission <filter's index> <user's account> <contract address> <func name(parameters)>
 babel-node AuthorityManager.js Group listPermission <filter's index> <user's account>
 ```
