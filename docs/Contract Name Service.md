@@ -1,119 +1,56 @@
 # CNS(Contract Name Service)
-
+**Author: fisco-dev**  
 ## Overview
 
-### 1.Steps to call a Smart Contract
+When business layer invokes a contract, it needs to know the address like '0x92535066cd4b022c7e84b058d8bbbf71e22c3c78'. However, if we need to upgrade the contract, the address will change and every contract referencing this address needs to be updated. CNS solves this by allowing us to create alias (contractName) to the address.
 
-Implement a smart contract includes steps: coding, compiling, and deployment.
-Take HelloWorld.sol as an example:
-
-``` solidity
-// HelloWorld.sol path: FISCO-BCOS/tool/HelloWorld.sol
-pragma solidity ^0.4.2;
-contract HelloWorld{
-    string name;
-    function HelloWorld(){
-       name="Hi,Welcome!";
-    }
-    function get()constant returns(string){
-        return name;
-    }
-    function set(string n){
-        name=n;
-    }
-}
-```
-
-After compiling the contract, a description of the contract interface - ABI - had been provided as follows:
-
-```json
-[
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "n",
-        "type": "string"
-      }
-    ],
-    "name": "set",
-    "outputs": [
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-    ],
-    "name": "get",
-    "outputs": [
-      {
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  }
-]
-```
-
-Then deploy the contract to the blockchain and get an address, for example: 0x269ab4bc23b07efeb3c3fd52eecfc4cbe6a50859.
-Finally, use the ABI and address to call the contract. The key input parameters are ABI and address even there are various SDK tools. 
-
-### 2. Brief to CNS
-
-ABI and contract address are mandatory in the calling process. There are below inconveniences:
+### ABI / Contract Address
+ABI and contract address are mandatory when we trigger the smart contract. Below are some disadvantages of using the ABI and contract address directly.
 
 1. The ABI is a long JSON string, not user-friendly.
-2. Contract address is a magic number which is hard to remember. The contracts will be lost if the address had been forgotten.
-3. The contract address changes for each deployment.
-4. Difficult to handle version management and contract gated-upgrade.
+2. Contract address is a magic number which is hard to remember and can easily typed wrong. 
+3. The contract will be unreachable if the address had been forgotten.
+4. The contract address is changed after deployment.
+5. It is difficult to manage versioning and contract gated-upgrade.
 
-The CNS hold a mapping between contract name and its ABI/address.
-When calling by CNS, pass the CNS name, version, function name and associated parameters. And then the CNS Manager module in framework will translate it to the exactly ABI and address for binary execution in EVM.
-
-Below diagram shows the process and its advantages:
-
-![](./assets/en_cns_1.png)
-
-1. No need to maintain unfriendly ABI and contract address any more.
-2. Only needs the CNS name, interface and parameter.
-3. Built-in version management and gated-upgrade features.
+With the CNS in place, we see the following advantages as a caller:
+1. No longer need to maintain the ABI and contract address.
+2. Only needs to know the contract name, version, function name and parameters
+3. Contract upgrade is transparent to the caller
+4. Supports gated-upgrade for contracts
 
 ## How it works
 
-### 1. Overall framework
+### 1. Sequence Diagram
 
+TODO: Add a sequence diagram showing #1, #2, #3 #4 steps
+
+|  --1-> |   |
+|  <--2  |   |
 ![](./assets/en_cns_2.png)
 
-The client calls the contract service by RPC, first it will visit contract naming service to get underlying business contract details (ABI and address), then constructing a call to business smart contract by its ABI and address, and finally return the results to the client.
+1. Client calls the Contract Manager and pass contract name, version (optional), function name and associated parameters
+2. Contract Manager gets the ABI and address with the contract name and version
+3. Contract Manager triggers the function in the contract (ABI and address we got from #2) with the associated parameters it got from #1 within EVM
+4. It returns the result to the client
 
 ### 2. Key components
 
 #### a. Contract Manager
 
-In contract manager, there is a mapping between the name and contract information. Contract information including contract address, ABI and version number etc., and an external tool (cns_manager.js) can add, update, override and reset the mapping information. The mapping information will be sync into the framework memory when changes.
+Contract manager contains mapping between the name and contract information. CNS Manager (cns_manager.js) is a tool that allows us to add, update, list and reset the mappings. Any changes made with the tool will be synchronized to the systems automatically.
 
-- The mapping in contract manager holds: contract name + contract version number => contract details (ABI, address etc.)
+- Mapping in the contract manager: 
+    Key: contract name, contract version number
+    Value: ABI, address
 - Implementation in code: systemcontractv2/ContractAbiMgr.sol  
 - Abstract Contract: tool/ContractBase.sol
 - Provide multi-version management by inheriting from ContractBase.sol, and initializing ContractAbiMgr with version number.
-> ContractAbiMgr is managed by system contract, system contract should be deployed before applying CNS.
+> ContractAbiMgr is managed by system contract. It should be deployed before applying CNS.
 
-#### b. Utilities
+#### b. CNS Manager Tool
 
-Provide add, update, override and reset naming mapping information by calling contract manager.
+Provide add, update, list and reset naming mapping information by calling contract manager.
 
 - Tool: tool/cns_manager.js  
 
@@ -235,10 +172,12 @@ cns_manager.js  ........................Begin........................
 - Parameter : 1. contract name  2. contract version [optional] 3. index  
 - Feature    : Reset the information in contract manager from the its history with specific index.
 
-#### c. RPC
 
-Modify RPC to support CNS call:
-> Only wrap the RPC interface so it is still compatible to original Ethereum call.
+#### c. RPC Interface
+
+The base class of the RPC interface is modified to support CNS
+
+> RPC interface is modified such that it is backward compatible to Ethereum call.
 > RPC format details: https://github.com/ethereum/wiki/wiki/JSON-RPC  
 
 - eth_call  
@@ -306,7 +245,7 @@ response:
 ```
 
 - eth_sendRawTransaction
-  The RPC request and response format are exactly the same as before. While the 'data' field, encoded as RLP HEX string, had been changed as below:  
+  The RPC request and response format are exactly the same as before. While the 'data' field, encoded as RLP HEX string, has been modified as below:  
 
 ```json
 "data": {
@@ -328,6 +267,8 @@ sendRawTransactionByNameService
 
 ## Examples
 
+### Creating, updating and resetting an entry in the CNS Manager
+
 ```solidity
 // Test contract
 // Path tool/HelloWorld.sol
@@ -344,6 +285,50 @@ contract HelloWorld{
         name=n;
     }
 }
+```
+
+After compiling the contract, a description of the contract interface - ABI - had been provided as follows:
+
+```json
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "n",
+        "type": "string"
+      }
+    ],
+    "name": "set",
+    "outputs": [
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+    ],
+    "name": "get",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  }
+]
 ```
 
 - Deployment:  
@@ -532,7 +517,7 @@ var result = web3sync.sendRawTransactionByNameService(config.account,config.priv
 var result = web3sync.sendRawTransactionByNameService(config.account,config.privKey,"HelloWorld","set","v-1.0",["test message!"]); 
 ```
 
-## Appendix One: Function overload   
+### Function overload   
 Solidity supports function overload. The value format of input 'func' parameter is different to original when calling overloaded function:
 
 ```solidity
@@ -613,7 +598,7 @@ jsCall set(uint256 _i)):
 var result = web3sync.sendRawTransactionByNameService(config.account,config.privKey,"OverloadTest","set(uint256)","",["0x111"]);
 ```
 
-## Appendix two: RPC called by Java  
+### RPC called by Java  
 
 Take HelloWorld.sol contract as an example:
 
@@ -791,8 +776,8 @@ public static XX loadByName(String contractName, Web3j web3j, TransactionManager
 The value format of contractName input parameter is: contractName@version, version is optional.
 
 5. Summary
-a. Use JavaScript tool to deploy contracts. 
-b. Use cns_nameger.js tool to register contract to contract manager.  
-c. Use websdk tool to generate the Java wrapper. 
-d. Add Java wrapper to project and create contract by loadByName.
-e. Call contract function.
+- Use JavaScript tool to deploy contracts. 
+- Use cns_nameger.js tool to register contract to contract manager.  
+- Use websdk tool to generate the Java wrapper. 
+- Add Java wrapper to project and create contract by loadByName.
+- Call contract function.
