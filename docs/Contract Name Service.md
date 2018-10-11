@@ -269,8 +269,6 @@ sendRawTransactionByNameService
 
 ### Creating, updating and resetting an entry in the CNS Manager
 
-TODO： Combine with the bottom code
-
 ```solidity
 // Test contract
 // Path tool/HelloWorld.sol
@@ -287,6 +285,50 @@ contract HelloWorld{
         name=n;
     }
 }
+```
+
+After compiling the contract, a description of the contract interface - ABI - had been provided as follows:
+
+```json
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "n",
+        "type": "string"
+      }
+    ],
+    "name": "set",
+    "outputs": [
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+    ],
+    "name": "get",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  }
+]
 ```
 
 - Deployment:  
@@ -734,80 +776,8 @@ public static XX loadByName(String contractName, Web3j web3j, TransactionManager
 The value format of contractName input parameter is: contractName@version, version is optional.
 
 5. Summary
-a. Use JavaScript tool to deploy contracts. 
-b. Use cns_nameger.js tool to register contract to contract manager.  
-c. Use websdk tool to generate the Java wrapper. 
-d. Add Java wrapper to project and create contract by loadByName.
-e. Call contract function.
-
-
-
-### 1.Steps to call a Smart Contract
-
-Implement a smart contract includes steps: coding, compiling, and deployment.
-Take HelloWorld.sol as an example:
-
-``` solidity
-// HelloWorld.sol path: FISCO-BCOS/tool/HelloWorld.sol
-pragma solidity ^0.4.2;
-contract HelloWorld{
-    string name;
-    function HelloWorld(){
-       name="Hi,Welcome!";
-    }
-    function get()constant returns(string){
-        return name;
-    }
-    function set(string n){
-        name=n;
-    }
-}
-```
-
-After compiling the contract, a description of the contract interface - ABI - had been provided as follows:
-
-```json
-[
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "n",
-        "type": "string"
-      }
-    ],
-    "name": "set",
-    "outputs": [
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-    ],
-    "name": "get",
-    "outputs": [
-      {
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  }
-]
-```
-
-Then deploy the contract to the blockchain and get an address, for example: 0x269ab4bc23b07efeb3c3fd52eecfc4cbe6a50859.
-Finally, use the ABI and address to call the contract. The key input parameters are ABI and address even there are various SDK tools. 
-
+- Use JavaScript tool to deploy contracts. 
+- Use cns_nameger.js tool to register contract to contract manager.  
+- Use websdk tool to generate the Java wrapper. 
+- Add Java wrapper to project and create contract by loadByName.
+- Call contract function.
