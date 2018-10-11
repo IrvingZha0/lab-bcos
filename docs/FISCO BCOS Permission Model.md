@@ -1,22 +1,26 @@
 # FISCO BCOS Permission Model
 **Author: fisco-dev**  
-## Brief to Permission Model - ARPI 
+## Introduction to Permission Model - ARPI 
 
-Unlike public chain which is free to join, quit, transact and search. The consortium chain has the requirements of admittance permit, transaction diversification, business privacy & security, high stability, etc. So, two key aspects - "permission" and "control" is emphasized in the practice of consortium chain.
+Unlike public chain which anyone can access, transact and search, the consortium chain has the specific entry requirements. There are two key aspects in the consortium chain: "permission" and "control"
 
-To meet the requirements, the permission model ARPI(Account—Role—Permission—Interface) is proposed, which is based on the thought of **system level permission** and **interface level permission**. 
+The permission model ARPI(Account—Role—Permission—Interface) is based on the thought of **system level permission** and **interface level permission**. 
 
-System level permission controls whether an account can deploy a new contract or call to an existing contract. When a request is received, the system will check the sender's permissions to determine the request's operation is permitted or rejected. Interface level permission controls whether an account can call a specific interface of a contract. The admin can give an account the permissions to call all or part of the interfaces of a contract after it get deployed and effected.
+System level permission controls whether an account can deploy or call a contract. When a request is received, the system will check the sender's permissions and will permit or reject accordingly. Interface level permission controls whether an account can call a specific interface of a contract. The admin can give an account the permissions to call all or part of the interfaces of a contract.
 
 In the ARPI model, there are 4 objects - **Account, Role, Permission and Interface**, their relationship as below:
 
 **Account : Role -> N : 1**
 
-An account (person or organization) can only have one role, but a role can contain zero to more than one account. In practice, a role may have multiple accounts with different pair of public and private key for each，when a transaction is initiating, the sender signs the transaction with its private key, and then the receiver can verify by using sender's public key to know which account the transaction is submitted, so that the transaction can be controlled and traced.
+An account (person or organization) can only have one role, but a role can contain zero to more than one account. In practice, a role may have multiple accounts with different pair of public and private key for each. ???When the sender creates a transaction, it will go through a series of filter which will look at the role/group and will fail if sender is not under it.
+
+?
+When a transaction starts, the sender signs the transaction with its private key, and then the receiver can verify it by using sender's public key to know which account the transaction is submitted, so that the transaction can be controlled and traced.
+
 
 **Role : Permission -> N : N**
 
-A role can have multiple permissions and a permission can be owned by multiple roles. In ARPI model, the permission controls the access small to an interface of a contract, so an account can call to one or more interfaces as long as it has the permission to the interface.
+A role can have multiple permissions and a permission can under multiple roles. You can have fine granuarlity of permission control under the ARPI model. You can set permissionon the contract's function. ????Can we set on contract level (* function)
 
 ARPI objects relationship as below:    
  ![](./assets/arpi_objects_en.png)
@@ -28,9 +32,9 @@ TransactionFilterChain contract is deployed along with system proxy contract dur
 ARPI process flow as below:
 ![](./assets/arpi_process_flow_en.png)
 
-Two key permissions:
-1. Permission to **deploy contract**, only the approved contract can be deployed on the chain for execution.
-2. Permission to **call contract**, only the permitted account can call the corresponding interface of the contract to execute their business transactions.
+Two general types of permissions:
+1. **deploy contract**: only the approved contract can be deployed on the chain for execution.?????
+2. **call contract**: accounts with permission to the smart contract/interface/abstract????? can call it to execute the business trasaction
 
 More details of the process flow describe as below:
 1. TransactionFilterChain includes multiple independent filters with its owned filtering logic. An account will have the specific permissions if it passes all filters’ validation. A filter can be managed by a member of the consortium and the permissions can be added independently.
@@ -92,8 +96,8 @@ babel-node AuthorityManager.js Group disableBlack <filter's index> <user's accou
 babel-node AuthorityManager.js Group getDeployStatus <filter's index> <user's account>
 babel-node AuthorityManager.js Group enableDeploy <filter's index> <user's account>
 babel-node AuthorityManager.js Group disableDeploy <filter's index> <user's account>
-babel-node AuthorityManager.js Group addPermission <filter's index> <user's account> <contract address> <function name(parameters)>
-babel-node AuthorityManager.js Group delPermission <filter's index> <user's account> <contract address> <function name(parameters)>
+babel-node AuthorityManager.js Group addPermission <filter's index> <user's account> <contract address> <fun name(parameters)>
+babel-node AuthorityManager.js Group delPermission <filter's index> <user's account> <contract address> <fun name(parameters)>
 babel-node AuthorityManager.js Group checkPermission <filter's index> <user's account> <contract address> <func name(parameters)>
 babel-node AuthorityManager.js Group listPermission <filter's index> <user's account>
 ```
@@ -172,3 +176,18 @@ babel-node AuthorityManager.js Group checkPermission 1 0x4015bd4dd8767d568fc54cf
 //List the permissions of a group with 2 parameters - filer's index and group's address   
 babel-node AuthorityManager.js Group listPermission 1 0x4015bd4dd8767d568fc54cf6d0817ecc95d166d9
 ```
+
+Account/Role
+| Jordan | Int Team |
+
+Role/Permission
+| Int Team | ReadIntDocs|
+
+Permission/Contract
+| ReadIntDocs | abc.sol,0x2132421, |
+
+Contract/Permission
+| abc.sol | ReadIntDocs |
+| abc.sol | ReadIntDocs1 |
+| abc.sol | ReadIntDocs3 |
+| 0x2132421 | ReadIntDocs |
