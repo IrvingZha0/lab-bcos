@@ -1,4 +1,6 @@
-# 1. Brief to Permission Model - ARPI 
+# FISCO BCOS Permission Model
+**Author: fisco-dev**  
+## 1. Brief to Permission Model - ARPI 
 
 Unlike public chain which is free to join, quit, transact and search. The consortium chain has the requirements of admittance permit, transaction diversification, business privacy & security, high stability, etc. So, two key aspects - "permission" and "control" is emphasized in the practice of consortium chain.
 
@@ -19,7 +21,7 @@ A role can have multiple permissions and a permission can be owned by multiple r
 ARPI objects relationship as below:    
  ![](./assets/arpi_objects_en.png)
 
-# 2. ARPI Framework Implementation
+## 2. ARPI Framework Implementation
 
 TransactionFilterChain contract is deployed along with system proxy contract during initialization, and it is registered by system proxy contract at the same time. All the permissions' CRUD is maintained by TransactionFilterChain on blockchain. When a request is received, the system will check whether the sender's account has permissions to the corresponding operations, if yes, then executes it, otherwise throws exception. 
 
@@ -39,7 +41,7 @@ More details of the process flow describe as below:
 6. An interface is composited by a function name with its parameters.
 7. The address will be changed once a contract get redeploy, so the permissions of the contract need to be re-granted.
 
-# 3. ARPI practice on consortium chain
+## 3. ARPI practice on consortium chain
 Roles and Permissions are generally related to scenarios, there will have different roles and permissions design based on different business requirement. Based on the practice on FISCO BCOS, here let's list out the definitions of roles and permissions for reference:
 
 * Chain Super manager (God account)
@@ -57,7 +59,7 @@ A Trader is a person who uses the system do conduct business transactions and qu
 * Chain regulator (Optional to be a group)
 A regulator is a person who responsible for setting up the permission specifications. The person usually is not participant in chain's management, but can participant in the business transactions. The role for those people **have permissions**: trace the operation records (The inputs for deploying and calling the contracts will be recorded by Event notification, which can be used for audit purpose)
 
-# 4. Utilities
+## 4. Utilities
 4.1 ARPI_Model.js under folder systemcontract, provides one click to start the ARPI mode which includes enabling access control and setting up the roles and permissions according to the previous section **3. ARPI practice on consortium chain**.
 
 >Note: The access control will be enabled after the one click, you can disable it by using the GOD account if you don’t need it, otherwise might impact the other account to deploy and call contracts by accident.

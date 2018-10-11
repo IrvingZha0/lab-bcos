@@ -1,5 +1,5 @@
 # CNS(Contract Name Service)
-
+**Author: fisco-dev**  
 ## Overview
 
 When business layer invokes a contract, it needs to know the address like '0x92535066cd4b022c7e84b058d8bbbf71e22c3c78'. However, if we need to upgrade the contract, the address will change and every contract referencing this address needs to be updated. CNS solves this by allowing us to create alias (contractName) to the address.

@@ -1,4 +1,5 @@
 # Group signature & Ring signature
+**Author: fisco-dev**  
 
 ## Catalog
 <!-- TOC -->

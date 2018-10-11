@@ -1,4 +1,5 @@
 # Regulated Zero-knowledge proof
+**Author: fisco-dev**  
 
 To meet the regulation requirement, when FISCO BCOS providing a framework to perform anonymous transaction by zero-knowledge proof, it also satisfies that regulators can regulate every transaction.
 
