@@ -8,7 +8,7 @@ When business layer invokes a contract, it needs to know the address like '0x925
 ABI and contract address are mandatory when we trigger the smart contract. Below are some disadvantages of using the ABI and contract address directly.
 
 1. The ABI is a long JSON string, not user-friendly.
-2. Contract address is a magic number which is hard to remember and can easily typed wrong. 
+2. Contract address is a magic number which is hard to remember and can easily type wrong. 
 3. The contract will be unreachable if the address had been forgotten.
 4. The contract address is changed after deployment.
 5. It is difficult to manage versioning and contract gated-upgrade.
@@ -549,8 +549,8 @@ contract OverloadTest {
 }
 ```
 In OverloadTest.sol:  
-set function is a overload function, one function is set(string), the other is set(uint256).  
-get function is also a overload function, one function is get(), the other is get(uint256).
+set function is an overload function, one function is set(string), the other is set(uint256).  
+get function is also an overload function, one function is get(), the other is get(uint256).
 
 Deployment:
 
