@@ -64,11 +64,11 @@ A regulator is a person who is responsible for setting up the permission specifi
 ## Script Usage Guidelines
 1. ARPI_Model.js located under folder systemcontract, provides one step execution to start the ARPI mode which includes enabling access control and setting up the roles and permissions according to the previous section **ARPI practice on consortium chain**.
 
->Note: The access control will be enabled after executing ARPI_Model.js, you can be disabled by using the GOD account, to avoid impacting other accounts to deploy or call contracts accidently.
+   >Note: The access control will be enabled after executing ARPI_Model.js, you can be disabled by using the GOD account, to avoid impacting other accounts to deploy or call contracts accidently.
 
 2. AuthorityManager.js located under the same folder systemcontract, used to manage TransactionFilterChain and provides the query interfaces to FilterChain, Filter, and Group. 
 
->Note: AuthorityManager.js and ARPI_Model.js execution requires God account.
+   >Note: AuthorityManager.js and ARPI_Model.js execution requires God account.
 
 *   FilterChain can be obtained without index. FilterChain provides the functions to add, delete, show and reset a filter on the chain. The commands are as below:
 ```
