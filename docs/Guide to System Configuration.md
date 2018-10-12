@@ -2,7 +2,7 @@
 **Author: fisco-dev**   
 ## Design Overview ##
 
-There are many distributed nodes in a block chain. To make sure the configuration is sync on all nodes, a mechanism had been built in FISCO BCOS with smart contract to sync up the configuration cross all nodes:
+There are many distributed nodes in a block chain. To ensure the configuration is in sync on all nodes, a mechanism has been built in FISCO BCOS using smart contract to sync up the configuration across all nodes:
 
 ![reference](./assets/sys_para.png)
 
@@ -65,7 +65,7 @@ Default: true
 
 ## update configuration ##
 
-> Configuration can be updated by calling system contract on any nodes but recommend using genesis node.
+> Configuration can be updated by calling system contract on any node but using genesis node is recommended.
 
 Command to update configuration: 
 
