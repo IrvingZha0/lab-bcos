@@ -152,7 +152,7 @@ bash start.sh
 
 sig-service-client provide below features：
 
-- Access [sig-service)](https://github.com/FISCO-BCOS/sig-service) rpc interface.
+- Access [sig-service](https://github.com/FISCO-BCOS/sig-service) rpc interface.
 - Put signature on the blockchain(make transaction)
 
 Detail usage and deployment[ Group signature & Ring signature client guidebook](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master/doc/manual).
