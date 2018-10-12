@@ -192,7 +192,7 @@ If ethcall is stopped by mistake, you can revert back FISCO BCOS to the original
 If a node enabled group/ring signature verification service, then all the other nodes must enable as well. Otherwise the nodes which are not enabled verification service will abnormally exit.
 <br>
 
-(4) Before invoking group/ring signature verification service, ** you must deploy [group signature & ring signature RPC guidebook](https://github.com/FISCO-BCOS/sig-service) and [sig-service-client](https://github.com/FISCO-BCOS/sig-service-client)**
+(4) Before invoking group/ring signature verification service, **you must deploy [group signature & ring signature RPC guidebook](https://github.com/FISCO-BCOS/sig-service) and [sig-service-client](https://github.com/FISCO-BCOS/sig-service-client)**
 
 [sig-service-client](https://github.com/FISCO-BCOS/sig-service-client) responsible for putting the signature on the blockchain，[group signature & ring signature RPC guidebook](https://github.com/FISCO-BCOS/sig-service) responsible for providing signature generating service
 <br>
