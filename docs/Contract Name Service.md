@@ -2,9 +2,9 @@
 
 ## Overview
 
-### 1.Steps to call a Smart Contract
+### 1.Steps to call a smart contract
 
-Implement a smart contract includes steps: code, compile and deploy.
+Implement a smart contract includes steps: coding, compiling and deploying.
 Take HelloWorld.sol as an example:
 
 ``` solidity
@@ -67,16 +67,15 @@ After compiling the contract, a description of the contract interface - ABI - is
   }
 ]
 ```
-
-Then deploy the contract to the blockchain to get an address, for example: 0x269ab4bc23b07efeb3c3fd52eecfc4cbe6a50859.
+Deploy the contract to the blockchain to generate an address, Such as: 0x269ab4bc23b07efeb3c3fd52eecfc4cbe6a50859.
 Finally, use the ABI and address to call the smart contract. The key input parameters are ABI and address even there are different SDK tools. 
 
 ### 2. Brief to CNS
 
 ABI and contract address are mandatory when we trigger the smart contract. Below are some disadvantages of using the ABI and contract address directly.
 
-1.	The ABI is a long JSON string, not user-friendly.
-2.	Contract address is a magic number which is hard to remember and can easily type wrong.
+1.	The ABI is a lengthy JSON string which is not user-friendly.
+2.	Contract address is a magic number which is difficult to remember and can easily type wrong.
 3.	The contract will be unreachable if the address had been forgotten.
 4.	The contract address is changed after deployment.
 5.	It is difficult to manage versioning and contract gated-upgrade.
@@ -96,7 +95,7 @@ With the CNS in place, we see the following advantages as a caller:
 
 ![](./assets/en_cns_2.png)
 
-The client calls the contract service by RPC, first it will visit contract naming service to get underlying business contract details (ABI and address), then constructing a call to business smart contract by its ABI and address, and finally return the results to the client.
+The client calls the contract service by RPC, first it will visit contract naming service to get underlying business contract details (ABI and address), then construct a call to business smart contract by using it's ABI and address, and finally return the results to the client.
 
 ### 2. Key components
 
@@ -107,10 +106,13 @@ Contract manager contains mapping between the name and contract information. CNS
 - Mapping in the contract manager: 
   > Key: contract name, contract version number 
   > Value: ABI, address.
-- Implementation in code: systemcontractv2/ContractAbiMgr.sol  
+- Sample implementation code: systemcontractv2/ContractAbiMgr.sol  
 - Abstract Contract: tool/ContractBase.sol
 - Provide multi-version management by inheriting from ContractBase.sol, and initializing ContractAbiMgr with version number.
 > ContractAbiMgr is managed by system contract, system contract should be deployed before applying CNS.
+
+---------------------
+
 
 #### b. CNS Manager Tool
 
@@ -135,7 +137,7 @@ List of utility methods:
 - Command    : add  
 - Parameter  : contractName  
 - Function   : add contract name to contract management  
-- Note       : If the contract name already exists then the operation will be failed. So needs: 1. change the contract version - specify the version number when calling by CNS. or 2. overwrite mapping in contract manager by calling 'update' command.
+- Note       : Duplicate contract name raise warning. This can be resolve in following two ways: 1. change the contract version and specify the version number during calling by CNS. or 2. overwrite mapping in contract manager by calling 'update' command.
 
 ```javascript
 //first time add Test, success
@@ -150,11 +152,11 @@ cns add operation => cns_name = Test
 //second time add, failed
 babel-node cns_manager.js add Test
 cns_manager.js  ........................Begin........................
- [WARNING] cns add operation failed , ====> contract => Test version =>  is already exist. you can update it or change its version.
+ [WARNING] cns add operation failed , ====> contract => Test version =>  already exist. you can update it or change its version.
 ```
 - Command   : get  
 - Parameter : 1. contractName  2. contractVersion [optional]  
-- Feature    : Get contract information by name and version
+- Description    : Get contract information by name and version
 
 ```javascript
 babel-node cns_manager.js get HelloWorld
@@ -168,13 +170,13 @@ cns_manager.js  ........................Begin........................
 ```
 - Command   : update 
 - Parameter : contractName
-- Feature    : Update stored contract information  
-- Note      : Failed when the corresponding contract does not exist. So needs add firstly; The overwritten information can be queried by 'historylist' command and reset by 'reset' command.
+- Description    : Update stored contract information  
+- Note      : 1, Failure in case the corresponding contract does not exist. To resolve, add the missing contract first; 2, The overwritten information can be queried by 'historylist' command and reset by 'reset' command.
 
 ```javascript
 babel-node cns_manager.js update Test
 cns_manager.js  ........................Begin........................
- ====> Are you sure update the cns of the contract ?(Y/N)
+ ====> Are you sure you want to update the cns of the contract ?(Y/N)
 Y
 cns update operation => cns_name = Test
          cns_name =>Test
@@ -186,7 +188,7 @@ Send transaction successfully: 0x1d3caff1fba49f5ad8af3d195999454d01c64d236d9ac3b
 ```
 - Command   : list 
 - Parameter : simple[optional]
-- Feature    : List all existing mapping in contract manager. Print contract name and version if simple has been provided. Otherwise print all details.
+- Description    : List all the existing mappings in the contract manager. Display the contract name and version in case option 'simple' provided, else display all the details.
 
 ```javascript
 babel-node cns_manager.js list simple
@@ -206,8 +208,8 @@ cns_manager.js  ........................Begin........................
 ```
 
 - Command   : historylist 
-- Parameter : 1. contract name  2. contract version [optional] 
-- Feature    : List all update history for provided contract
+- Parameter : 1. contract name | 2, contract version [optional] 
+- Description    : Display all update history for provided contract
 ```javascript
 babel-node cns_manager.js historylist HelloWorld
 cns_manager.js  ........................Begin........................
@@ -234,7 +236,7 @@ cns_manager.js  ........................Begin........................
 ```
 - Command   : reset 
 - Parameter : 1. contract name  2. contract version [optional] 3. index  
-- Feature    : Reset the information in contract manager from the its history with specific index.
+- Description    : Resets the information in contract manager from its history at the specified index.
 
 #### c. RPC interface
 
@@ -307,8 +309,7 @@ response:
 ```
 
 - eth_sendRawTransaction
-  The RPC request and response format are exactly the same as before. While the 'data' field, encoded as RLP HEX string, is changed as below:  
-
+  The RPC request and response format are the same except the 'data' field which is encoded as RLP HEX string.
 ```json
 "data": {
         "contract": "",
@@ -349,11 +350,11 @@ contract HelloWorld{
 
 - Deployment:  
   babel-node deploy.js HelloWorld  
->   By calling deploy.js, the cns_mangager add function, with contract name as file name, is called by default when deployed successfully. If fail to add then need:  
-1. Call 'cns_manager add' again if a customized name is needed.
-2. Leave it for test contract.
-3. Call 'cns_manager update' for bug fixing or upgrade.
-4. Modify the contract's version if previous contract is still needed (refer to multi-version deployment).
+>   When contract gets deployed successfully, the cns_manager add function is called by default, and the file name would be same as the contract name. In case of failure, action as below:  
+1. Call 'cns_manager add' again if a specific name is needed.
+2. No action needed for a test contract.
+3. Call 'cns_manager update' for bug fix or upgrade.
+4. Modify the contract's version if previous contract is still in use (refer to multi-version deployment).
 
 ```javascript
     //examples of success
@@ -382,7 +383,7 @@ contract HelloWorld{
      
 ```
 Multi-version Deployment
-'cns_manager add' is failed due to the version already exists. Modify contract version by providing version number in the constructor of ContractBase.sol.  
+In case multi-version Deployment using 'cns_manager add' fails due to duplicate version, modify the contract version by providing unique version number in the constructor of ContractBase.sol.
 
 ```solidity
 pragma solidity ^0.4.4;
@@ -399,7 +400,7 @@ contract HelloWorld is ContractBase("v-1.0"){
     }
 }
 ```
-deploy once more
+re-deploy
 ```shell  
 babel-node deploy.js HelloWorld
 deploy.js  ........................Start........................
@@ -442,8 +443,9 @@ curl -X POST --data  '{"jsonrpc":"2.0","method":"eth_sendTransaction","params":[
 ```
 
 - Upgrade contract
-  Contract can be upgraded by 'update' command.
-  Redeploy to upgrade HelloWorld, but as cns_manager already added HelloWorld before, it will be failed when adding. Need to execute 'update' command instead.
+  Contract can be upgraded using 'update' command.
+  If cns_manager has HelloWorld added already with old address, in order to be able to redeploy and upgrade HelloWorld, it requires to use ‘update’ command to avoid failure while adding.
+  
 ```shell
 babel-node cns_manager.js update HelloWorld
 cns_manager.js  ........................Begin........................
@@ -534,7 +536,7 @@ var result = web3sync.sendRawTransactionByNameService(config.account,config.priv
 ```
 
 ## Appendix One: Function overload   
-Solidity supports function overload. The value format of input 'func' parameter is different to original when calling overloaded function:
+Solidity supports function overload. The value format of input 'func' parameter is different than original when calling overloaded function:
 
 ```solidity
 //file : OverloadTest.sol
@@ -565,10 +567,10 @@ contract OverloadTest {
 }
 ```
 In OverloadTest.sol:  
-set function is an overload function, one function is set(string), the other is set(uint256).  
-get function is also an overload function, one function is get(), the other is get(uint256).
+set function is a overloaded function, one function is set(string), the other is set(uint256).  
+get function is also an overloaded function, one function is get(), the other is get(uint256).
 
-Deployment:
+Deployment Procedure:
 
 ```shell
 babel-node deploy.js OverloadTest
@@ -620,7 +622,7 @@ Take HelloWorld.sol contract as an example:
 
 1. Deploy HelloWorld.sol and use the cns_manager.js to register HelloWorld to contract manager.
 2. Download [web3sdk](https://github.com/FISCO-BCOS/web3sdk), the version needs >= V1.1.0.
-3. The HelloWorld Java wrapper [reference tutorial](https://github.com/FISCO-BCOS/web3sdk#五合约编译及java-wrap代码生成) generated by web3sdk. Package - org.bcos.cns - as below:
+3. The HelloWorld Java wrapper ([reference tutorial](https://github.com/FISCO-BCOS/web3sdk#五合约编译及java-wrap代码生成) ) generated by web3sdk, code package - org.bcos.cns - as below:
 ```java
 package org.bcos.cns;
 
@@ -775,7 +777,7 @@ public class Main {
 ```java
  HelloWorld instance = HelloWorld.loadByName("HelloWorld", web3j, credentials, gasPrice , gasLimit);  
 ```
-The 'get' and 'set' function are called by CNS as the contract instance is created by loadByName.
+The 'get' and 'set' functions are called by CNS as the contract instance is created by loadByName.
 
 * P.S.:  
 The Java wrapper method - loadByName - is generated by XX.sol as follows:
@@ -793,7 +795,7 @@ The value format of contractName input parameter is: contractName@version, versi
 
 5. Summary
 - Use JavaScript tool to deploy contracts. 
-- Use cns_nameger.js tool to register contract to contract manager.  
-- Use websdk tool to generate the Java wrapper. 
-- Add Java wrapper to project and create contract by loadByName.
-- Call contract function.
+- Use cns_manager.js tool to register a contract to contract manager.  
+- Use websdk tool to generate Java wrapper. 
+- Add the Java wrapper to project and create the contract by loadByName.
+- Call the contract function.
