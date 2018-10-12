@@ -47,8 +47,9 @@ Consensus decision-making is a group decision-making process, and agree to suppo
 3. Sign: Followers receive block from the leader node and confirm whether the transaction is valid, followers will sign the signature to the block when the nodes agree on a block.
 4. Vote: If more than 2/3 of all nodes sign the transaction, then broadcast it.
 5. Data to disk: If more than 2/3 of all nodes vote, then store the data to disk.
-<br>
- ![](./assets/pbft_process.png) 
+![](./assets/pbft_error.png)  
+ 
+ 
 ###  3.4 Exception handling
 In the several stages of the consensus decision-making process described in section 3.3, each stage may be unable to work smoothly due to some reasons such as error, timeout or deliberate evil, thus the consensus decision-making process is failed. FISCO BCOS patent algorithm introduces an exception handling to solve this problem.
 A view is one consensus decision-making process life circle. and next view needs to be executed after the current view complete.
