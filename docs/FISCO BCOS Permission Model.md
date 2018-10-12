@@ -46,19 +46,19 @@ Process flow details:
 ## ARPI practice on consortium chain
 Roles and Permissions are generally related to scenarios, there will have different roles and permissions design based on different business requirement. Based on the practice on FISCO BCOS, here let's list out the definitions of roles and permissions for reference:
 
-* Chain Super Admin (God account)
+* Chain Super Admin (God account)   
 A chain super administrator is selected by the consortium committee or public, who has all the permissions to the system. This role has following **permissions**: assign roles to users, add permissions to roles, which includes the permissions to perform any operations. The God account is required to execute the system contracts.
 
-* Chain/Filter admin
+* Chain/Filter admin   
 A chain/filter administrator can manage filters and audit, modify and delete information of nodes, accounts and contracts on the chain. This role has following **permissions**: execute the system contracts – CAAction, NodeAction, ContractABIAction and SystemProxy.
 
-* Operation admin
+* Operation admin   
 An operation administrator is a person who deploys/manages the non-system contracts and nodes configuration, but doesn’t participate in business transactions. This role has following **permissions**: execute ConfigAction, deploy non-system contracts (except for SystemProxy, which is needed to get ConfigAction). For the non-system contracts, chain manager needs to call ContractABIAction to make the contract effective (this call can be made by contract name rather than by address)
 
-* Trader
+* Trader  
 A Trader is a person who uses the system to conduct business transactions and query the results, the role here can be subdivided based on different business requirements. This role has following **permissions**: execute and query business contracts.
 
-* Chain regulator (Optional to be a group)
+* Chain regulator (Optional to be a group)   
 A regulator is a person who is responsible for setting up the permission specifications. The person usually is not participant in the chain's management but can participant in the business transactions. This role has following **permissions**: trace the operation records (The inputs for deploying and calling the contracts will be recorded by Event notification, which can be used for audit purposes)
 
 ## Script Usage Guidelines
