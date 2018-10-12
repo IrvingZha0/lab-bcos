@@ -1,7 +1,7 @@
 # FISCO BCOS Permission Model
 
 **Author: fisco-dev** 
-## Brief to Permission Model - ARPI 
+## Introduction to Permission Model - ARPI 
 
 Unlike public chain which anyone can access, transact and search, the consortium chain has the specific entry requirements, such as access control, various transactions support, privacy & security,high stablity etc. There are two key aspects in the consortium chain: "permission" and "control"
 
