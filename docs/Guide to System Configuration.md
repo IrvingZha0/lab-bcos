@@ -1,4 +1,4 @@
-# Guide to System Configuration#
+# Guide to System Configuration
 **Author: fisco-dev**   
 ## Design Overview ##
 

@@ -4,13 +4,8 @@
 ## Catalog
 <!-- TOC -->
 - [1 Introduction](#1-introduction)
-    - [1.1 Case study](#11-case-study)
-    - [1.2 Sample code](#12-sample-code)
 - [2 Deployment](#2-deployment)
-    - [2.1 Enable Group signature & Ring signature ethcall](#21-enable-group-signature--ring-signature-ethcall)
-    - [2.2 Disable Group signature & Ring signature ethcall](#22-disable-group-signature--ring-signature-ethcall)
-- [3 Usage](#3-usage)
-- [4 Matters need attention](#4-matters-need-attention)
+- [3 Note](#3-note)
 
 <!-- TOC -->
 
@@ -65,7 +60,7 @@ FISCO BCOS supports configure whether enable the ethcall for group signature & r
 
 Ensure FISCO BCOS deployed before ethcall deployment. ([How to deploy FISCO BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS/tree/master/doc/manual) )
 
-### 2.1 Enable Group signature & Ring signature ethcall
+### Enable/Disable Group signature & Ring signature ethcall
 
 
 **(1) Install dependencies**
@@ -150,7 +145,7 @@ bash start.sh
 <br>
 
 
-## 2 Other dependencies
+### Other dependencies
 
 **(1) Client： [sig-service-client](https://github.com/FISCO-BCOS/sig-service-client)**
 
@@ -179,7 +174,7 @@ sig-service's usage and deployment [group signature & ring signature RPC guidebo
 
 
 
-## 4 Note
+## 3 Note
 
 **(1) Group signature & ring signature is backward compatible** 
 
