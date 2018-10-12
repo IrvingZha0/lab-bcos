@@ -48,10 +48,11 @@ Sample code for group signature & ring signature：
 | Verification implement | libevm/ethcall/EthcallGroupSig.h<br>libevm/ethcall/EthcallRingSig.h | use ethcall to call the group/ring signature lib   |
 
 FISCO BCOS supports configure whether enable the ethcall for group signature & ring signature(by default it is disabled). 
-|  <div align = left>Action</div>  | <div align = left>Compile</div>  | <div align = left>Compile time</div>  | <div align = left>Description</div>  |
-|---|---|---|---|
-| enable ethcall  | dependencies will compile  |  long compile time | group/ring signature enabled  |
-| disable ethall  | dependencies won't compile  |  short compile time | group/ring signature disabled  |
+
+| <div align = left>Action</div>             | <div align = left>Compile</div>                                       | <div align = left>Compile time</div>                                       |<div align = left>Description</div>                                       |
+| -------------- | ---------------------------------------- | ---------------------------------------- |---------------------------------------- |
+| enable ethcall       | dependencies will compile  | long compile time |group/ring signature enabled |
+| disable ethcall       | dependencies will not compile  | short compile time |group/ring signature disabled |
 
 <br>
 
